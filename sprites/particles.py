@@ -54,7 +54,7 @@ class ScoreParticle:
         self.lifetime = 600
         self.max_lifetime = 600
         self.alpha = 255
-        self.font = pygame.font.Font(None, 36)
+        self.font = get_vn_font(36)
         
     def update(self, dt):
         self.y += self.vy
@@ -141,6 +141,33 @@ class ParticleSystem:
             lifetime = random.randint(500, 1000)
             
             self.particles.append(Particle(x, y, color, (vx, vy), lifetime, size, 0.08))
+            
+    def emit_firework(self, x, y):
+        """Emit firework explosion for Tet"""
+        # Default colors
+        colors = [(255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255), (255, 0, 255)]
+        
+        if TET_MODE:
+             try:
+                 colors = FIREWORK_COLORS
+             except NameError:
+                 colors = [TET_GOLD, TET_RED, (255, 100, 200)]
+             
+        for _ in range(50):
+            angle = random.uniform(0, 2 * math.pi)
+            speed = random.uniform(2, 9)
+            vx = math.cos(angle) * speed
+            vy = math.sin(angle) * speed
+            
+            # If not list, make it list
+            if not isinstance(colors, list):
+                colors = [colors]
+                
+            color = random.choice(colors)
+            size = random.randint(2, 6)
+            lifetime = random.randint(800, 1500)
+            
+            self.particles.append(Particle(x, y, color, (vx, vy), lifetime, size, 0.05))
             
     def update(self, dt):
         """Update all particles"""

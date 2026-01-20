@@ -1,3 +1,4 @@
+from settings import get_vn_font
 import pygame
 import random
 from settings import *
@@ -15,8 +16,8 @@ class TreasureHunt:
         self.victory = False
         
         # Fonts
-        self.font = pygame.font.Font(None, 28)
-        self.big_font = pygame.font.Font(None, 56)
+        self.font = get_vn_font(28)
+        self.big_font = get_vn_font(56)
         
         # Map settings
         self.tile_size = 40
@@ -338,3 +339,4 @@ class TreasureHunt:
                 return "done"
                 
         return None
+

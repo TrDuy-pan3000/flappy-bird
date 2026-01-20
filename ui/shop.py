@@ -13,10 +13,10 @@ class ShopMenu:
         self.screen = screen
         self.game_data = game_data
         
-        # Fonts (cached)
-        self.title_font = pygame.font.Font(None, 48)
-        self.label_font = pygame.font.Font(None, 28)
-        self.small_font = pygame.font.Font(None, 22)
+        # Fonts (cached) - Vietnamese support
+        self.title_font = get_vn_font(48)
+        self.label_font = get_vn_font(28)
+        self.small_font = get_vn_font(22)
         
         # Scrolling
         self.scroll_offset = 0

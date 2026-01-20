@@ -8,6 +8,31 @@ ASSETS_DIR = os.path.join(BASE_DIR, "assets", "images")
 SKINS_DIR = os.path.join(ASSETS_DIR, "skins")
 
 # =============================================================================
+# FONT HELPER FOR VIETNAMESE SUPPORT
+# =============================================================================
+_font_cache = {}
+
+def get_vn_font(size):
+    """Get a system font that supports Vietnamese characters"""
+    if size in _font_cache:
+        return _font_cache[size]
+    
+    try:
+        # Try common fonts that support Vietnamese on Windows
+        for font_name in ['segoeui', 'arial', 'tahoma', 'msyh', 'dejavusans']:
+            font = pygame.font.SysFont(font_name, size)
+            if font:
+                _font_cache[size] = font
+                return font
+    except:
+        pass
+    
+    # Fallback to default font
+    font = pygame.font.Font(None, size)
+    _font_cache[size] = font
+    return font
+
+# =============================================================================
 # TẾT NGUYÊN ĐÁN 2026 - SPECIAL EDITION
 # =============================================================================
 

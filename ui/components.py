@@ -11,7 +11,7 @@ class Button:
         self.hover_color = hover_color or tuple(min(255, c + 30) for c in color)
         self.text_color = text_color
         self.is_hovered = False
-        self.font = pygame.font.Font(None, FONT_MEDIUM)
+        self.font = get_vn_font(FONT_MEDIUM)
         
         # Animation
         self.scale = 1.0
@@ -167,7 +167,7 @@ class ScoreDisplay:
     def __init__(self, x, y, font_size=FONT_LARGE):
         self.x = x
         self.y = y
-        self.font = pygame.font.Font(None, font_size)
+        self.font = get_vn_font(font_size)
         self.score = 0
         
     def set_score(self, score):

@@ -63,7 +63,7 @@ class Game:
         # HUD
         from ui.menus import ScoreDisplay
         self.score_display = ScoreDisplay(SCREEN_WIDTH // 2, 50)
-        self.hud_font = pygame.font.Font(None, 28)
+        self.hud_font = get_vn_font(28)
         
         # Timers
         self.last_pipe_spawn = 0
@@ -634,12 +634,12 @@ class Game:
         pygame.draw.rect(self.screen, TET_GOLD, panel_rect, 3, border_radius=20)
         
         # Title
-        title_font = pygame.font.Font(None, 48)
+        title_font = get_vn_font(48)
         title = title_font.render("🧧 KẾT QUẢ 🧧", True, TET_GOLD)
         self.screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, 170))
         
         # Stats
-        stats_font = pygame.font.Font(None, 32)
+        stats_font = get_vn_font(32)
         
         lixi_text = stats_font.render(f"Lì Xì thu thập: {results['lixi_collected']}", True, WHITE)
         self.screen.blit(lixi_text, (70, 230))
@@ -651,7 +651,7 @@ class Game:
         self.screen.blit(bonus_text, (70, 310))
         
         # Continue prompt
-        cont_font = pygame.font.Font(None, 24)
+        cont_font = get_vn_font(24)
         cont_text = cont_font.render("Nhấn chuột để tiếp tục", True, (180, 180, 180))
         self.screen.blit(cont_text, (SCREEN_WIDTH // 2 - cont_text.get_width() // 2, 380))
         
@@ -680,7 +680,7 @@ class Game:
             self.screen.blit(combo, (SCREEN_WIDTH // 2 - combo.get_width() // 2, 85))
             
     def draw_get_ready(self):
-        font = pygame.font.Font(None, 48)
+        font = get_vn_font(48)
         if TET_MODE:
             text_str = "Sẵn Sàng!"
             tap_str = "Nhấn SPACE hoặc chuột để bay!"
@@ -692,7 +692,7 @@ class Game:
         self.screen.blit(shadow, (SCREEN_WIDTH // 2 - shadow.get_width() // 2 + 2, SCREEN_HEIGHT // 2 + 2))
         text = font.render(text_str, True, WHITE)
         self.screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2))
-        small = pygame.font.Font(None, 26)
+        small = get_vn_font(26)
         tap = small.render(tap_str, True, (200, 200, 200))
         self.screen.blit(tap, (SCREEN_WIDTH // 2 - tap.get_width() // 2, SCREEN_HEIGHT // 2 + 45))
         

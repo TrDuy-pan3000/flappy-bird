@@ -3,17 +3,30 @@ import math
 import random
 from settings import *
 
+# Helper function to get font with Vietnamese support
+def get_vn_font(size):
+    """Get a system font that supports Vietnamese characters"""
+    try:
+        # Try common fonts that support Vietnamese
+        for font_name in ['segoeui', 'arial', 'tahoma', 'dejavusans']:
+            font = pygame.font.SysFont(font_name, size)
+            if font:
+                return font
+    except:
+        pass
+    return pygame.font.Font(None, size)
+
 class MainMenu:
     def __init__(self, screen, high_score=0, coins=0):
         self.screen = screen
         self.high_score = high_score
         self.coins = coins
         
-        # Fonts
-        self.title_font = pygame.font.Font(None, 64)
-        self.subtitle_font = pygame.font.Font(None, 32)
-        self.coin_font = pygame.font.Font(None, 28)
-        self.greeting_font = pygame.font.Font(None, 24)
+        # Fonts - using system fonts for Vietnamese support
+        self.title_font = get_vn_font(64)
+        self.subtitle_font = get_vn_font(32)
+        self.coin_font = get_vn_font(28)
+        self.greeting_font = get_vn_font(24)
         
         # Buttons
         center_x = SCREEN_WIDTH // 2
@@ -168,7 +181,7 @@ class MainMenu:
             
         # Draw instructions
         inst_text = "Nhấn SPACE hoặc Click để chơi" if TET_MODE else "Press SPACE or Click to Play"
-        inst_surf = pygame.font.Font(None, 22).render(inst_text, True, (180, 180, 180))
+        inst_surf = get_vn_font(22).render(inst_text, True, (180, 180, 180))
         inst_rect = inst_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30))
         self.screen.blit(inst_surf, inst_rect)
     
@@ -247,8 +260,8 @@ class SettingsMenu:
         self.current_difficulty = current_difficulty
         
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.label_font = pygame.font.Font(None, 32)
+        self.title_font = get_vn_font(48)
+        self.label_font = get_vn_font(32)
         
         center_x = SCREEN_WIDTH // 2
         
@@ -347,7 +360,7 @@ class SettingsMenu:
                 "hard": "Fast speed, small gaps"
             }
         desc = descriptions.get(self.current_difficulty, "")
-        desc_surf = pygame.font.Font(None, 24).render(desc, True, (200, 200, 200))
+        desc_surf = get_vn_font(24).render(desc, True, (200, 200, 200))
         desc_rect = desc_surf.get_rect(center=(SCREEN_WIDTH // 2, 320))
         self.screen.blit(desc_surf, desc_rect)
         
@@ -398,9 +411,9 @@ class GameOverScreen:
         self.lixi_earned = 0  # Tet special
         
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.score_font = pygame.font.Font(None, 40)
-        self.label_font = pygame.font.Font(None, 28)
+        self.title_font = get_vn_font(48)
+        self.score_font = get_vn_font(40)
+        self.label_font = get_vn_font(28)
         
         center_x = SCREEN_WIDTH // 2
         
@@ -592,8 +605,8 @@ class PauseScreen:
         center_x = SCREEN_WIDTH // 2
         
         # Fonts
-        self.title_font = pygame.font.Font(None, 56)
-        self.label_font = pygame.font.Font(None, 24)
+        self.title_font = get_vn_font(56)
+        self.label_font = get_vn_font(24)
         
         # Buttons
         self.resume_button = Button(
@@ -727,7 +740,7 @@ class Button:
         self.color = color
         self.text_color = text_color
         self.hovered = False
-        self.font = pygame.font.Font(None, 28)
+        self.font = get_vn_font(28)
         
     def update(self, mouse_pos):
         self.hovered = self.rect.collidepoint(mouse_pos)
@@ -824,7 +837,7 @@ class ScoreDisplay:
     def __init__(self, x, y, font_size=48):
         self.x = x
         self.y = y
-        self.font = pygame.font.Font(None, font_size)
+        self.font = get_vn_font(font_size)
         self.score = 0
         
     def draw(self, screen):

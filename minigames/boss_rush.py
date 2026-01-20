@@ -1,3 +1,4 @@
+from settings import get_vn_font
 import pygame
 import random
 from settings import *
@@ -19,8 +20,8 @@ class BossRush:
         self.hits_taken = 0
         
         # Fonts
-        self.font = pygame.font.Font(None, 36)
-        self.big_font = pygame.font.Font(None, 72)
+        self.font = get_vn_font(36)
+        self.big_font = get_vn_font(72)
         
         # Sprites
         self.player = None
@@ -195,7 +196,7 @@ class BossRush:
             self.screen.blit(phase, (20, 60))
             
         # Controls
-        ctrl = pygame.font.Font(None, 20).render("SPACE: Jump | X: Shoot", True, (180, 180, 180))
+        ctrl = get_vn_font(20).render("SPACE: Jump | X: Shoot", True, (180, 180, 180))
         self.screen.blit(ctrl, (SCREEN_WIDTH // 2 - ctrl.get_width() // 2, SCREEN_HEIGHT - 25))
         
     def draw_game_over(self):
@@ -265,3 +266,4 @@ class BossRush:
                     self.player_shoot()
                     
         return None
+

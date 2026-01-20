@@ -22,10 +22,11 @@ class BirdBattle:
         self.player_wins = 0
         self.enemy_wins = 0
         
-        # Fonts
-        self.font = pygame.font.Font(None, 36)
-        self.big_font = pygame.font.Font(None, 64)
-        self.small_font = pygame.font.Font(None, 24)
+        # Fonts - Vietnamese support
+        from settings import get_vn_font
+        self.font = get_vn_font(36)
+        self.big_font = get_vn_font(64)
+        self.small_font = get_vn_font(24)
         
         # Sprites
         self.player = None
@@ -618,3 +619,4 @@ class BattlePowerUp(pygame.sprite.Sprite):
         # Expire
         if now - self.spawn_time > self.lifetime:
             self.kill()
+

@@ -1,3 +1,4 @@
+from settings import get_vn_font
 import pygame
 import random
 import math
@@ -19,8 +20,8 @@ class DodgeMaster:
         self.wave = 1
         
         # Fonts
-        self.font = pygame.font.Font(None, 36)
-        self.big_font = pygame.font.Font(None, 72)
+        self.font = get_vn_font(36)
+        self.big_font = get_vn_font(72)
         
         # Sprites
         self.player = None
@@ -265,14 +266,14 @@ class DodgeMaster:
         
         # Dash indicator
         if self.dash_ready:
-            dash_text = pygame.font.Font(None, 24).render("DASH READY [SPACE]", True, (100, 255, 100))
+            dash_text = get_vn_font(24).render("DASH READY [SPACE]", True, (100, 255, 100))
         else:
             remaining = max(0, self.dash_cooldown - (pygame.time.get_ticks() - self.last_dash))
-            dash_text = pygame.font.Font(None, 24).render(f"Dash: {remaining // 1000 + 1}s", True, (150, 150, 150))
+            dash_text = get_vn_font(24).render(f"Dash: {remaining // 1000 + 1}s", True, (150, 150, 150))
         self.screen.blit(dash_text, (SCREEN_WIDTH // 2 - dash_text.get_width() // 2, SCREEN_HEIGHT - 30))
         
         # Controls hint
-        hint = pygame.font.Font(None, 20).render("← → to move", True, (180, 180, 180))
+        hint = get_vn_font(20).render("← → to move", True, (180, 180, 180))
         self.screen.blit(hint, (SCREEN_WIDTH // 2 - hint.get_width() // 2, SCREEN_HEIGHT - 50))
         
     def draw_game_over(self):
@@ -322,3 +323,4 @@ class DodgeMaster:
                 return "done"
                 
         return None
+

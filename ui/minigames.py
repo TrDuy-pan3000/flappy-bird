@@ -9,11 +9,11 @@ class MiniGameMenu:
     def __init__(self, screen):
         self.screen = screen
         
-        # Fonts
-        self.title_font = pygame.font.Font(None, 42)
-        self.label_font = pygame.font.Font(None, 28)
-        self.small_font = pygame.font.Font(None, 22)
-        self.desc_font = pygame.font.Font(None, 18)
+        # Fonts - using Vietnamese-compatible fonts
+        self.title_font = get_vn_font(42)
+        self.label_font = get_vn_font(28)
+        self.small_font = get_vn_font(22)
+        self.desc_font = get_vn_font(18)
         
         # Scrolling
         self.scroll_offset = 0
@@ -547,9 +547,9 @@ class LiXiHuntMode:
         self.is_over = False
         
         # Fonts
-        self.font = pygame.font.Font(None, 36)
-        self.big_font = pygame.font.Font(None, 64)
-        self.small_font = pygame.font.Font(None, 24)
+        self.font = get_vn_font(36)
+        self.big_font = get_vn_font(64)
+        self.small_font = get_vn_font(24)
         
         # Game state
         self.lixi_collected = 0
@@ -774,7 +774,7 @@ class TimeAttackMode:
         self.is_active = False
         self.score = 0
         self.coins = 0
-        self.font = pygame.font.Font(None, 36)
+        self.font = get_vn_font(36)
         
     def start(self):
         self.start_time = pygame.time.get_ticks()
@@ -818,7 +818,7 @@ class ZenMode:
         self.coins_collected = 0
         self.distance = 0
         self.is_active = False
-        self.font = pygame.font.Font(None, 28)
+        self.font = get_vn_font(28)
         
     def start(self):
         self.is_active = True
@@ -850,7 +850,7 @@ class DailyChallenge:
     
     def __init__(self, screen):
         self.screen = screen
-        self.font = pygame.font.Font(None, 24)
+        self.font = get_vn_font(24)
         import datetime
         today = datetime.date.today()
         random.seed(today.toordinal())

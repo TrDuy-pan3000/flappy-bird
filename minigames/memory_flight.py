@@ -1,3 +1,4 @@
+from settings import get_vn_font
 import pygame
 import random
 from settings import *
@@ -17,8 +18,8 @@ class MemoryFlight:
         self.score = 0
         
         # Fonts
-        self.font = pygame.font.Font(None, 36)
-        self.big_font = pygame.font.Font(None, 72)
+        self.font = get_vn_font(36)
+        self.big_font = get_vn_font(72)
         
         # Sprites
         self.player = None
@@ -271,3 +272,4 @@ class MemoryFlight:
                 self.player.velocity = -5
                 
         return None
+
