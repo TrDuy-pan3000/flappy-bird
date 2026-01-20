@@ -13,7 +13,7 @@ class Button:
         self.is_hovered = False
         self.font = get_vn_font(FONT_MEDIUM)
         
-        # Animation
+
         self.scale = 1.0
         self.target_scale = 1.0
         
@@ -22,12 +22,12 @@ class Button:
         self.is_hovered = self.rect.collidepoint(mouse_pos)
         self.target_scale = 1.05 if self.is_hovered else 1.0
         
-        # Smooth scale animation
+
         self.scale += (self.target_scale - self.scale) * 0.2
         
     def draw(self, screen):
         """Draw the button with modern styling"""
-        # Calculate scaled rect
+
         scaled_width = int(self.rect.width * self.scale)
         scaled_height = int(self.rect.height * self.scale)
         scaled_rect = pygame.Rect(
@@ -37,29 +37,29 @@ class Button:
             scaled_height
         )
         
-        # Draw shadow
+
         shadow_rect = scaled_rect.copy()
         shadow_rect.y += 4
         pygame.draw.rect(screen, (0, 0, 0, 80), shadow_rect, border_radius=BUTTON_RADIUS)
         
-        # Draw button background
+
         color = self.hover_color if self.is_hovered else self.base_color
         pygame.draw.rect(screen, color, scaled_rect, border_radius=BUTTON_RADIUS)
         
-        # Draw border
+
         border_color = tuple(max(0, c - 40) for c in color)
         pygame.draw.rect(screen, border_color, scaled_rect, 3, border_radius=BUTTON_RADIUS)
         
-        # Draw highlight at top
+
         highlight_rect = pygame.Rect(scaled_rect.x + 4, scaled_rect.y + 4, scaled_rect.width - 8, 8)
         highlight_color = tuple(min(255, c + 60) for c in color)
         pygame.draw.rect(screen, highlight_color, highlight_rect, border_radius=4)
         
-        # Draw text with shadow
+
         text_surf = self.font.render(self.text, True, self.text_color)
         text_rect = text_surf.get_rect(center=scaled_rect.center)
         
-        # Shadow
+
         shadow_surf = self.font.render(self.text, True, TEXT_SHADOW)
         screen.blit(shadow_surf, (text_rect.x + 2, text_rect.y + 2))
         screen.blit(text_surf, text_rect)
@@ -77,19 +77,19 @@ class Panel:
         
     def draw(self, screen):
         """Draw a wooden panel background"""
-        # Shadow
+
         shadow_rect = self.rect.copy()
         shadow_rect.x += 5
         shadow_rect.y += 5
         pygame.draw.rect(screen, (0, 0, 0, 100), shadow_rect, border_radius=12)
         
-        # Main panel
+
         pygame.draw.rect(screen, PANEL_COLOR, self.rect, border_radius=12)
         
-        # Border
+
         pygame.draw.rect(screen, PANEL_DARK, self.rect, 4, border_radius=12)
         
-        # Inner highlight
+
         inner = self.rect.inflate(-8, -8)
         pygame.draw.rect(screen, tuple(min(255, c + 20) for c in PANEL_COLOR), inner, border_radius=8)
 
@@ -132,11 +132,11 @@ class MedalDisplay:
         color = colors.get(medal_type, (255, 215, 0))
         center = self.size // 2
         
-        # Circle
+
         pygame.draw.circle(surf, color, (center, center), center - 4)
         pygame.draw.circle(surf, tuple(max(0, c - 40) for c in color), (center, center), center - 4, 3)
         
-        # Star
+
         star_points = []
         for i in range(5):
             outer_angle = -90 + i * 72
@@ -177,7 +177,7 @@ class ScoreDisplay:
         """Draw score with shadow effect"""
         text = str(self.score)
         
-        # Shadow
+
         shadow_surf = self.font.render(text, True, TEXT_SHADOW)
         text_surf = self.font.render(text, True, WHITE)
         

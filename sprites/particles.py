@@ -22,10 +22,10 @@ class Particle:
         self.y += self.vy
         self.vy += self.gravity
         
-        # Reduce lifetime
+
         self.lifetime -= dt
         
-        # Fade out
+
         self.alpha = max(0, int(255 * (self.lifetime / self.max_lifetime)))
         
         return self.lifetime > 0
@@ -35,7 +35,7 @@ class Particle:
         if self.alpha <= 0:
             return
             
-        # Create a surface with alpha
+
         size = max(1, int(self.size * (self.lifetime / self.max_lifetime)))
         surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
         
@@ -58,7 +58,7 @@ class ScoreParticle:
         
     def update(self, dt):
         self.y += self.vy
-        self.vy *= 0.98  # Slow down
+        self.vy *= 0.98
         self.lifetime -= dt
         self.alpha = max(0, int(255 * (self.lifetime / self.max_lifetime)))
         return self.lifetime > 0
@@ -70,7 +70,7 @@ class ScoreParticle:
         text_surf = self.font.render("+1", True, PRIMARY_COLOR)
         text_surf.set_alpha(self.alpha)
         
-        # Add shadow
+
         shadow_surf = self.font.render("+1", True, TEXT_SHADOW)
         shadow_surf.set_alpha(self.alpha)
         
@@ -96,7 +96,7 @@ class ParticleSystem:
             angle = random.uniform(0, 2 * math.pi)
             speed = random.uniform(2, 6)
             vx = math.cos(angle) * speed
-            vy = math.sin(angle) * speed - 2  # Bias upward
+            vy = math.sin(angle) * speed - 2
             
             color = random.choice(colors)
             size = random.randint(3, 8)
@@ -108,11 +108,11 @@ class ParticleSystem:
         """Emit particles when scoring"""
         self.score_particles.append(ScoreParticle(x, y))
         
-        # Also emit some sparkles
+
         colors = [PRIMARY_COLOR, (255, 255, 200), (255, 215, 0)]
         
         for _ in range(5):
-            angle = random.uniform(-math.pi/2 - 0.5, -math.pi/2 + 0.5)  # Mostly upward
+            angle = random.uniform(-math.pi/2 - 0.5, -math.pi/2 + 0.5)
             speed = random.uniform(1, 3)
             vx = math.cos(angle) * speed
             vy = math.sin(angle) * speed
@@ -144,7 +144,7 @@ class ParticleSystem:
             
     def emit_firework(self, x, y):
         """Emit firework explosion for Tet"""
-        # Default colors
+
         colors = [(255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255), (255, 0, 255)]
         
         if TET_MODE:
@@ -159,7 +159,7 @@ class ParticleSystem:
             vx = math.cos(angle) * speed
             vy = math.sin(angle) * speed
             
-            # If not list, make it list
+
             if not isinstance(colors, list):
                 colors = [colors]
                 

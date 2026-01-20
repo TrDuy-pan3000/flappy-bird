@@ -14,13 +14,13 @@ class Background:
         self.scroll_speed = diff_settings["scroll_speed"] * 0.3
         self.x = 0
         
-        # Tet animations
+
         self.fireworks = []
         self.lanterns = []
         self.petals = []
         self.time = 0
         
-        # Create cached background
+
         if TET_MODE:
             if Background._tet_cached is None:
                 Background._tet_cached = self.create_tet_background()
@@ -33,7 +33,7 @@ class Background:
         
     def init_tet_effects(self):
         """Initialize Tet decorations"""
-        # Lanterns
+
         for i in range(5):
             self.lanterns.append({
                 'x': random.randint(30, SCREEN_WIDTH - 30),
@@ -43,7 +43,7 @@ class Background:
                 'color': random.choice([LANTERN_RED, LANTERN_GOLD])
             })
         
-        # Initial petals
+
         for _ in range(15):
             self.petals.append({
                 'x': random.randint(0, SCREEN_WIDTH),
@@ -59,7 +59,7 @@ class Background:
         """Create beautiful Tet night sky background"""
         surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT - GROUND_HEIGHT))
         
-        # Night sky gradient
+
         for y in range(SCREEN_HEIGHT - GROUND_HEIGHT):
             ratio = y / (SCREEN_HEIGHT - GROUND_HEIGHT)
             r = int(SKY_TOP[0] + (SKY_BOTTOM[0] - SKY_TOP[0]) * ratio)
@@ -67,8 +67,8 @@ class Background:
             b = int(SKY_TOP[2] + (SKY_BOTTOM[2] - SKY_TOP[2]) * ratio)
             pygame.draw.line(surf, (r, g, b), (0, y), (SCREEN_WIDTH, y))
         
-        # Stars
-        random.seed(2026)  # Năm mới 2026
+
+        random.seed(2026)
         for _ in range(80):
             x = random.randint(0, SCREEN_WIDTH)
             y = random.randint(0, int((SCREEN_HEIGHT - GROUND_HEIGHT) * 0.7))
@@ -76,31 +76,30 @@ class Background:
             size = random.randint(1, 3)
             pygame.draw.circle(surf, (brightness, brightness, brightness), (x, y), size)
         
-        # Moon
+
         moon_x, moon_y = SCREEN_WIDTH - 70, 60
         pygame.draw.circle(surf, (255, 250, 220), (moon_x, moon_y), 35)
-        pygame.draw.circle(surf, (240, 235, 200), (moon_x + 3, moon_y - 2), 30)  # Crater effect
+        pygame.draw.circle(surf, (240, 235, 200), (moon_x + 3, moon_y - 2), 30)
         
-        # Distant mountains/city silhouette for Tet
+
         city_y = SCREEN_HEIGHT - GROUND_HEIGHT - 80
         city_color = (30, 20, 40)
         
-        # Traditional houses silhouette
+
         houses = [
             (0, 50, 35), (40, 65, 40), (85, 55, 35), (125, 75, 45),
             (175, 60, 35), (215, 70, 40), (260, 55, 35), (300, 80, 45), (350, 60, 35)
         ]
         
-        for x, h, w in houses:
-            # House body
+
             pygame.draw.rect(surf, city_color, (x, city_y - h + 50, w, h))
-            # Traditional roof
+
             pygame.draw.polygon(surf, (40, 25, 50), [
                 (x - 5, city_y - h + 50),
                 (x + w // 2, city_y - h + 30),
                 (x + w + 5, city_y - h + 50)
             ])
-            # Windows with warm light
+
             for wy in range(city_y - h + 58, city_y + 40, 12):
                 for wx in range(x + 5, x + w - 5, 10):
                     if random.random() > 0.3:
@@ -160,30 +159,30 @@ class Background:
         self.time += 1
         
         if TET_MODE:
-            # Update lanterns swing
+
             for lantern in self.lanterns:
                 lantern['swing'] += 0.03
             
-            # Update petals
+
             for petal in self.petals:
                 petal['x'] += petal['vx']
                 petal['y'] += petal['vy']
                 petal['rotation'] += 2
                 
-                # Wrap around
+
                 if petal['y'] > SCREEN_HEIGHT - GROUND_HEIGHT:
                     petal['y'] = -10
                     petal['x'] = random.randint(0, SCREEN_WIDTH)
                 if petal['x'] < -10:
                     petal['x'] = SCREEN_WIDTH + 10
             
-            # Update fireworks
+
             for fw in self.fireworks[:]:
                 fw.update()
                 if fw.done:
                     self.fireworks.remove(fw)
             
-            # Spawn new fireworks occasionally
+
             if random.random() < 0.01:
                 self.spawn_firework()
             
@@ -192,15 +191,15 @@ class Background:
         screen.blit(self.image, (int(self.x) + SCREEN_WIDTH, 0))
         
         if TET_MODE:
-            # Draw petals
+
             for petal in self.petals:
                 self.draw_petal(screen, petal)
             
-            # Draw lanterns
+
             for lantern in self.lanterns:
                 self.draw_lantern(screen, lantern)
             
-            # Draw fireworks
+
             for fw in self.fireworks:
                 fw.draw(screen)
     
@@ -209,11 +208,11 @@ class Background:
         x, y = int(petal['x']), int(petal['y'])
         size = petal['size']
         
-        # Simple petal shape
+
         surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
         pygame.draw.ellipse(surf, petal['color'], (0, size // 2, size * 2, size))
         
-        # Rotate
+
         rotated = pygame.transform.rotate(surf, petal['rotation'])
         rect = rotated.get_rect(center=(x, y))
         screen.blit(rotated, rect)
@@ -225,20 +224,20 @@ class Background:
         size = lantern['size']
         color = lantern['color']
         
-        # String
+
         pygame.draw.line(screen, (100, 80, 60), (int(x), 0), (int(x), int(y) - size // 2), 2)
         
-        # Lantern body (oval)
+
         pygame.draw.ellipse(screen, color, (int(x) - size // 2, int(y) - size // 2, size, int(size * 1.3)))
         
-        # Inner glow
+
         glow_color = (min(255, color[0] + 50), min(255, color[1] + 50), color[2])
         pygame.draw.ellipse(screen, glow_color, (int(x) - size // 3, int(y) - size // 3, size * 2 // 3, size))
         
-        # Top handle
+
         pygame.draw.rect(screen, (80, 60, 40), (int(x) - size // 4, int(y) - size // 2 - 5, size // 2, 8))
         
-        # Bottom tip
+
         pygame.draw.polygon(screen, color, [
             (int(x) - size // 4, int(y) + int(size * 0.8) - size // 2),
             (int(x), int(y) + int(size * 1.1) - size // 2),
@@ -254,7 +253,7 @@ class Firework:
         self.y = y
         self.target_y = random.randint(80, 200)
         self.vy = -random.uniform(8, 12)
-        self.phase = "rising"  # rising, exploding, fading
+        self.phase = "rising"
         self.particles = []
         self.done = False
         self.color = random.choice(FIREWORK_COLORS)
@@ -262,7 +261,7 @@ class Firework:
     def update(self):
         if self.phase == "rising":
             self.y += self.vy
-            self.vy += 0.15  # Gravity
+            self.vy += 0.15
             
             if self.y <= self.target_y or self.vy >= 0:
                 self.phase = "exploding"
@@ -275,7 +274,7 @@ class Firework:
             for p in self.particles:
                 p['x'] += p['vx']
                 p['y'] += p['vy']
-                p['vy'] += 0.08  # Gravity
+                p['vy'] += 0.08
                 p['life'] -= 0.02
                 
                 if p['life'] > 0:
@@ -304,7 +303,7 @@ class Firework:
     
     def draw(self, screen):
         if self.phase == "rising":
-            # Draw trail
+
             pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 4)
             pygame.draw.circle(screen, WHITE, (int(self.x), int(self.y)), 2)
             
@@ -350,21 +349,21 @@ class Ground(pygame.sprite.Sprite):
         """Create festive Tet ground"""
         surf = pygame.Surface((SCREEN_WIDTH, GROUND_HEIGHT))
         
-        # Red festive path
+
         pygame.draw.rect(surf, (139, 69, 19), (0, 0, SCREEN_WIDTH, GROUND_HEIGHT))
         
-        # Gold trim at top
+
         pygame.draw.rect(surf, TET_GOLD, (0, 0, SCREEN_WIDTH, 8))
         pygame.draw.rect(surf, (200, 160, 0), (0, 8, SCREEN_WIDTH, 4))
         
-        # Decorative pattern
-        random.seed(88)  # Lucky number
+
+        random.seed(88)
         for x in range(0, SCREEN_WIDTH, 40):
-            # Red patterns
+
             pygame.draw.circle(surf, TET_RED, (x + 20, 25), 8)
             pygame.draw.circle(surf, TET_GOLD, (x + 20, 25), 4)
         
-        # Soil texture
+
         for _ in range(30):
             x = random.randint(0, SCREEN_WIDTH)
             y = random.randint(35, GROUND_HEIGHT - 5)

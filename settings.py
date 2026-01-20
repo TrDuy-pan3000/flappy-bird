@@ -2,14 +2,12 @@ import pygame
 import os
 from datetime import datetime
 
-# Get the base directory
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR = os.path.join(BASE_DIR, "assets", "images")
 SKINS_DIR = os.path.join(ASSETS_DIR, "skins")
 
-# =============================================================================
-# FONT HELPER FOR VIETNAMESE SUPPORT
-# =============================================================================
+
 _font_cache = {}
 
 def get_vn_font(size):
@@ -18,7 +16,7 @@ def get_vn_font(size):
         return _font_cache[size]
     
     try:
-        # Try common fonts that support Vietnamese on Windows
+
         for font_name in ['segoeui', 'arial', 'tahoma', 'msyh', 'dejavusans']:
             font = pygame.font.SysFont(font_name, size)
             if font:
@@ -27,32 +25,30 @@ def get_vn_font(size):
     except:
         pass
     
-    # Fallback to default font
+
     font = pygame.font.Font(None, size)
     _font_cache[size] = font
     return font
 
-# =============================================================================
-# TẾT NGUYÊN ĐÁN 2026 - SPECIAL EDITION
-# =============================================================================
 
-# Check if it's Tet season (January 15 - February 15)
+
+
 def is_tet_season():
     now = datetime.now()
     month = now.month
     day = now.day
-    return (month == 1 and day >= 15) or (month == 2 and day <= 15) or True  # Always Tet for testing
+    return (month == 1 and day >= 15) or (month == 2 and day <= 15) or True
 
 TET_MODE = is_tet_season()
 
-# Game Settings
+
 SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 600
 FPS = 60
 TITLE = "Flappy Bird - Tết Nguyên Đán 2026 🧧" if TET_MODE else "Flappy Bird - Ultimate Edition v2.0"
 VERSION = "3.0 - Tet Edition" if TET_MODE else "2.0"
 
-# Game States
+
 STATE_MENU = "menu"
 STATE_PLAYING = "playing"
 STATE_PAUSED = "paused"
@@ -60,31 +56,29 @@ STATE_GAME_OVER = "game_over"
 STATE_SHOP = "shop"
 STATE_SETTINGS = "settings"
 
-# =============================================================================
-# TET COLORS - Traditional Vietnamese Lunar New Year Palette
-# =============================================================================
+
 
 if TET_MODE:
-    # Tet Red & Gold Theme
+
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     SKY_BLUE = (25, 25, 50)  # Night sky for Tet
     
-    # UI Colors - Tet Edition
-    PRIMARY_COLOR = (255, 215, 0)         # Bright Gold (Vàng Kim)
-    SECONDARY_COLOR = (200, 30, 30)       # Lucky Red (Đỏ May Mắn)
-    ACCENT_COLOR = (255, 100, 100)        # Coral Red (Hồng Đào)
+
+    PRIMARY_COLOR = (255, 215, 0)
+    SECONDARY_COLOR = (200, 30, 30)
+    ACCENT_COLOR = (255, 100, 100)
     DARK_OVERLAY = (0, 0, 0, 200)
-    PANEL_COLOR = (139, 0, 0)             # Dark Red Panel
-    PANEL_DARK = (100, 0, 0)              # Darker Red
+    PANEL_COLOR = (139, 0, 0)
+    PANEL_DARK = (100, 0, 0)
     TEXT_SHADOW = (80, 20, 20)
-    COIN_COLOR = (255, 215, 0)            # Gold
+    COIN_COLOR = (255, 215, 0)
     
-    # Tet Special Colors
+
     TET_RED = (200, 30, 30)
     TET_GOLD = (255, 215, 0)
-    TET_PINK = (255, 182, 193)            # Hoa Đào
-    TET_YELLOW = (255, 223, 0)            # Hoa Mai
+    TET_PINK = (255, 182, 193)
+    TET_YELLOW = (255, 223, 0)
     LANTERN_RED = (220, 50, 50)
     LANTERN_GOLD = (255, 200, 50)
     FIREWORK_COLORS = [
@@ -96,11 +90,11 @@ if TET_MODE:
         (255, 150, 50)
     ]
     
-    # Gradient colors for Tet night sky
-    SKY_TOP = (15, 15, 40)                # Deep night blue
-    SKY_BOTTOM = (40, 20, 60)             # Purple night
+
+    SKY_TOP = (15, 15, 40)
+    SKY_BOTTOM = (40, 20, 60)
 else:
-    # Default Colors
+
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     SKY_BLUE = (135, 206, 235)
@@ -117,9 +111,7 @@ else:
     SKY_TOP = (135, 206, 250)
     SKY_BOTTOM = (176, 224, 230)
 
-# =============================================================================
-# DIFFICULTY SETTINGS - Enhanced for Tet
-# =============================================================================
+
 
 DIFFICULTIES = {
     "easy": {
@@ -151,20 +143,20 @@ DIFFICULTIES = {
     }
 }
 
-# Default difficulty
+
 CURRENT_DIFFICULTY = "medium"
 
-# Physics (default)
+
 GRAVITY = 0.25
 BIRD_JUMP = -5
 SCROLL_SPEED = 3
 PIPE_GAP = 150
 PIPE_FREQUENCY = 1500
 
-# Ground settings
+
 GROUND_HEIGHT = 80
 
-# Medal Thresholds
+
 MEDAL_THRESHOLDS = {
     "bronze": 5,
     "silver": 15,
@@ -172,54 +164,52 @@ MEDAL_THRESHOLDS = {
     "platinum": 50
 }
 
-# Bird Settings
+
 BIRD_WIDTH = 45
 BIRD_HEIGHT = 35
 BIRD_ANIMATION_SPEED = 150
 
-# Pipe Settings
+
 PIPE_WIDTH = 52
 PIPE_MIN_HEIGHT = 50
 
-# Coin Settings
+
 COIN_SIZE = 30
 COIN_VALUE = 1
 
-# Lì Xì Settings (Tet Special)
-LIXI_SIZE = 40
-LIXI_VALUES = [5, 10, 20, 50, 88, 168]  # Lucky numbers
 
-# Power-up Settings
+LIXI_SIZE = 40
+LIXI_VALUES = [5, 10, 20, 50, 88, 168]
+
+
 POWERUP_SIZE = 35
 POWERUP_DURATION = 5000
 
-# Particle Settings
+
 PARTICLE_COUNT = 15
 PARTICLE_LIFETIME = 500
 FIREWORK_PARTICLE_COUNT = 50 if TET_MODE else 0
 
-# Font sizes
+
 FONT_LARGE = 48
 FONT_MEDIUM = 32
 FONT_SMALL = 24
 FONT_TINY = 18
 
-# Button dimensions
+
 BUTTON_WIDTH = 150
 BUTTON_HEIGHT = 50
 BUTTON_RADIUS = 10
 
-# Animation settings
+
 FADE_SPEED = 8
 TRANSITION_SPEED = 15
 
-# Score file
+
 SCORE_FILE = os.path.join(BASE_DIR, "highscore.json")
 DATA_FILE = os.path.join(BASE_DIR, "gamedata.json")
 
-# =============================================================================
-# SKINS - Enhanced with Tet Edition Skins
-# =============================================================================
+
 
 SKINS = {
     "default": {
@@ -299,7 +289,7 @@ SKINS = {
         "ability": "teleport",
         "unlocked": False
     },
-    # =========== TẾT SPECIAL SKINS ===========
+
     "tet_dragon": {
         "name": "Rồng Vàng 🐉",
         "price": 888,
@@ -367,9 +357,7 @@ SKINS = {
     }
 }
 
-# =============================================================================
-# POWER-UPS - Enhanced with Tet abilities
-# =============================================================================
+
 
 POWERUPS = {
     "shield": {
@@ -392,7 +380,7 @@ POWERUPS = {
         "duration": 10000,
         "color": (255, 215, 0)
     },
-    # Tet Special Power-ups
+
     "lixi_magnet": {
         "name": "Lì Xì Magnet",
         "duration": 10000,
@@ -410,13 +398,11 @@ POWERUPS = {
     }
 }
 
-# Combo system
+
 COMBO_THRESHOLD = 3
 COMBO_MULTIPLIER = 1.5
 
-# =============================================================================
-# TET GREETINGS - Vietnamese New Year Messages
-# =============================================================================
+
 
 TET_GREETINGS = [
     "Chúc Mừng Năm Mới! 🎊",

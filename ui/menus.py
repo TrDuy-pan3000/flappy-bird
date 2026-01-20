@@ -3,11 +3,10 @@ import math
 import random
 from settings import *
 
-# Helper function to get font with Vietnamese support
 def get_vn_font(size):
     """Get a system font that supports Vietnamese characters"""
     try:
-        # Try common fonts that support Vietnamese
+
         for font_name in ['segoeui', 'arial', 'tahoma', 'dejavusans']:
             font = pygame.font.SysFont(font_name, size)
             if font:
@@ -22,13 +21,13 @@ class MainMenu:
         self.high_score = high_score
         self.coins = coins
         
-        # Fonts - using system fonts for Vietnamese support
+
         self.title_font = get_vn_font(64)
         self.subtitle_font = get_vn_font(32)
         self.coin_font = get_vn_font(28)
         self.greeting_font = get_vn_font(24)
         
-        # Buttons
+
         center_x = SCREEN_WIDTH // 2
         
         self.play_button = Button(
@@ -58,7 +57,7 @@ class MainMenu:
             (100, 100, 120) if not TET_MODE else (139, 0, 0)
         )
         
-        # Animation
+
         self.title_offset = 0
         self.title_direction = 1
         self.bird_angle = 0
@@ -66,7 +65,7 @@ class MainMenu:
         self.greeting_timer = 0
         self.confetti = []
         
-        # Initialize Tet effects
+
         if TET_MODE:
             self.init_confetti()
         
@@ -89,22 +88,22 @@ class MainMenu:
         self.shop_button.update(mouse_pos)
         self.settings_button.update(mouse_pos)
         
-        # Animate title
+
         self.title_offset += 0.5 * self.title_direction
         if abs(self.title_offset) > 5:
             self.title_direction *= -1
             
-        # Animate bird
+
         self.bird_angle += 2
         
-        # Update greeting rotation (Tet)
+
         if TET_MODE:
             self.greeting_timer += 1
             if self.greeting_timer > 180:  # Change every 3 seconds
                 self.greeting_timer = 0
                 self.greeting_index = (self.greeting_index + 1) % len(TET_GREETINGS)
             
-            # Update confetti
+
             for c in self.confetti:
                 c['x'] += c['vx']
                 c['y'] += c['vy']
@@ -116,21 +115,21 @@ class MainMenu:
         
     def draw(self, background, ground):
         """Draw the main menu"""
-        # Draw background
+
         background.draw(self.screen)
         ground.draw(self.screen)
         
-        # Draw semi-transparent overlay for readability
+
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 80 if TET_MODE else 50))
         self.screen.blit(overlay, (0, 0))
         
-        # Draw confetti (Tet)
+
         if TET_MODE:
             for c in self.confetti:
                 self.draw_confetti_piece(c)
         
-        # Coins display in top right
+
         coin_bg = pygame.Rect(SCREEN_WIDTH - 110, 10, 100, 35)
         pygame.draw.rect(self.screen, (0, 0, 0), coin_bg, border_radius=8)
         if TET_MODE:
@@ -139,11 +138,11 @@ class MainMenu:
         coin_surf = self.coin_font.render(coin_text, True, COIN_COLOR)
         self.screen.blit(coin_surf, (SCREEN_WIDTH - 100, 18))
         
-        # Draw Tet greeting banner
+
         if TET_MODE:
             self.draw_tet_banner()
         
-        # Draw title
+
         title_text = "FLAPPY BIRD" if not TET_MODE else "FLAPPY TẾT"
         title_surf = self.title_font.render(title_text, True, WHITE)
         title_shadow = self.title_font.render(title_text, True, TEXT_SHADOW)
@@ -154,7 +153,7 @@ class MainMenu:
         self.screen.blit(title_shadow, shadow_rect)
         self.screen.blit(title_surf, title_rect)
         
-        # Draw subtitle
+
         if TET_MODE:
             subtitle = f"🧧 Tết 2026 Edition v{VERSION} 🧧"
         else:
@@ -163,23 +162,23 @@ class MainMenu:
         subtitle_rect = subtitle_surf.get_rect(center=(SCREEN_WIDTH // 2, 150))
         self.screen.blit(subtitle_surf, subtitle_rect)
         
-        # Draw animated bird icon
+
         bird_y = 210 + pygame.math.Vector2(0, 1).rotate(self.bird_angle).y * 8
         self.draw_bird_icon(SCREEN_WIDTH // 2, int(bird_y))
         
-        # Draw buttons
+
         self.play_button.draw(self.screen)
         self.shop_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        # Draw high score
+
         if self.high_score > 0:
             hs_text = f"Kỷ lục: {self.high_score}" if TET_MODE else f"Best: {self.high_score}"
             hs_surf = self.subtitle_font.render(hs_text, True, WHITE)
             hs_rect = hs_surf.get_rect(center=(SCREEN_WIDTH // 2, 500))
             self.screen.blit(hs_surf, hs_rect)
             
-        # Draw instructions
+
         inst_text = "Nhấn SPACE hoặc Click để chơi" if TET_MODE else "Press SPACE or Click to Play"
         inst_surf = get_vn_font(22).render(inst_text, True, (180, 180, 180))
         inst_rect = inst_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30))
@@ -189,12 +188,12 @@ class MainMenu:
         """Draw rotating Tet greeting banner"""
         greeting = TET_GREETINGS[self.greeting_index]
         
-        # Banner background
+
         banner_rect = pygame.Rect(20, 50, SCREEN_WIDTH - 40, 35)
         pygame.draw.rect(self.screen, TET_RED, banner_rect, border_radius=8)
         pygame.draw.rect(self.screen, TET_GOLD, banner_rect, 2, border_radius=8)
         
-        # Greeting text
+
         text_surf = self.greeting_font.render(greeting, True, TET_GOLD)
         text_rect = text_surf.get_rect(center=banner_rect.center)
         self.screen.blit(text_surf, text_rect)
@@ -216,22 +215,22 @@ class MainMenu:
             body_color = (255, 220, 50)
             accent_color = (255, 180, 30)
         
-        # Body
+
         pygame.draw.ellipse(self.screen, body_color, (x - 25, y - 15, 50, 30))
         pygame.draw.ellipse(self.screen, accent_color, (x - 25, y - 15, 50, 30), 2)
         
-        # Wing
+
         pygame.draw.ellipse(self.screen, (255, 200, 40), (x - 20, y - 5, 15, 12))
         
-        # Eye
+
         pygame.draw.circle(self.screen, WHITE, (x + 10, y - 5), 8)
         pygame.draw.circle(self.screen, BLACK, (x + 12, y - 5), 4)
         
-        # Beak
+
         beak_color = TET_RED if TET_MODE else (255, 140, 50)
         pygame.draw.polygon(self.screen, beak_color, [(x + 20, y), (x + 32, y + 3), (x + 20, y + 6)])
         
-        # Tet decoration (small crown/hat)
+
         if TET_MODE:
             pygame.draw.polygon(self.screen, TET_RED, [
                 (x - 5, y - 18), (x + 5, y - 25), (x + 15, y - 18)
@@ -247,7 +246,7 @@ class MainMenu:
         if self.settings_button.is_clicked(event):
             return "settings"
             
-        # Space to play
+
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             return "play"
             
@@ -259,13 +258,13 @@ class SettingsMenu:
         self.screen = screen
         self.current_difficulty = current_difficulty
         
-        # Fonts
+
         self.title_font = get_vn_font(48)
         self.label_font = get_vn_font(32)
         
         center_x = SCREEN_WIDTH // 2
         
-        # Difficulty buttons with Tet colors
+
         easy_color = (100, 200, 100) if not TET_MODE else (100, 180, 100)
         medium_color = PRIMARY_COLOR
         hard_color = ACCENT_COLOR if not TET_MODE else TET_RED
@@ -297,7 +296,7 @@ class SettingsMenu:
             hard_color
         )
         
-        # Back button
+
         self.back_button = Button(
             center_x - BUTTON_WIDTH // 2,
             450,
@@ -318,35 +317,35 @@ class SettingsMenu:
         background.draw(self.screen)
         ground.draw(self.screen)
         
-        # Overlay
+
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 150 if TET_MODE else 100))
         self.screen.blit(overlay, (0, 0))
         
-        # Panel with Tet styling
+
         panel = Panel(50, 100, SCREEN_WIDTH - 100, 380, tet_style=TET_MODE)
         panel.draw(self.screen)
         
-        # Title
+
         title_text = "CÀI ĐẶT" if TET_MODE else "SETTINGS"
         title_surf = self.title_font.render(title_text, True, WHITE)
         title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 150))
         self.screen.blit(title_surf, title_rect)
         
-        # Difficulty label
+
         diff_text = "Độ khó:" if TET_MODE else "Difficulty:"
         diff_label = self.label_font.render(diff_text, True, WHITE)
         self.screen.blit(diff_label, (80, 210))
         
-        # Draw buttons
+
         self.easy_button.draw(self.screen)
         self.medium_button.draw(self.screen)
         self.hard_button.draw(self.screen)
         
-        # Highlight current selection
+
         self.draw_selection_indicator()
         
-        # Current difficulty description
+
         if TET_MODE:
             descriptions = {
                 "easy": "Chế độ nhẹ nhàng cho người mới",
@@ -364,7 +363,7 @@ class SettingsMenu:
         desc_rect = desc_surf.get_rect(center=(SCREEN_WIDTH // 2, 320))
         self.screen.blit(desc_surf, desc_rect)
         
-        # Back button
+
         self.back_button.draw(self.screen)
         
     def draw_selection_indicator(self):
@@ -408,16 +407,16 @@ class GameOverScreen:
         self.is_new_high_score = False
         self.medal_type = None
         self.coins_earned = 0
-        self.lixi_earned = 0  # Tet special
+        self.lixi_earned = 0
         
-        # Fonts
+
         self.title_font = get_vn_font(48)
         self.score_font = get_vn_font(40)
         self.label_font = get_vn_font(28)
         
         center_x = SCREEN_WIDTH // 2
         
-        # Buttons with Tet styling
+
         self.retry_button = Button(
             center_x - BUTTON_WIDTH - 10,
             420,
@@ -436,14 +435,14 @@ class GameOverScreen:
             ACCENT_COLOR if not TET_MODE else TET_RED
         )
         
-        # Medal display
+
         self.medal_display = MedalDisplay(center_x - 32, 240)
         
-        # Animation
+
         self.panel_y = -300
         self.target_panel_y = 100
         
-        # Tet firework celebration
+
         self.celebration_particles = []
         
     def set_scores(self, score, high_score, is_new_high, medal_type, coins_earned=0, lixi_earned=0):
@@ -456,7 +455,7 @@ class GameOverScreen:
         self.medal_display.set_medal(medal_type)
         self.panel_y = -300
         
-        # Spawn celebration particles for Tet
+
         if TET_MODE and is_new_high:
             self.spawn_celebration()
     
@@ -477,10 +476,10 @@ class GameOverScreen:
         self.retry_button.update(mouse_pos)
         self.menu_button.update(mouse_pos)
         
-        # Animate panel sliding in
+
         self.panel_y += (self.target_panel_y - self.panel_y) * 0.15
         
-        # Update celebration particles
+
         for p in self.celebration_particles[:]:
             p['x'] += p['vx']
             p['y'] += p['vy']
@@ -490,56 +489,56 @@ class GameOverScreen:
                 self.celebration_particles.remove(p)
         
     def draw(self):
-        # Dark overlay
+
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 180 if TET_MODE else 150))
         self.screen.blit(overlay, (0, 0))
         
-        # Draw celebration particles
+
         for p in self.celebration_particles:
             alpha = int(255 * p['life'])
             pygame.draw.circle(self.screen, p['color'], (int(p['x']), int(p['y'])), int(p['size'] * p['life']))
         
-        # Panel
+
         panel_rect = pygame.Rect(30, int(self.panel_y), SCREEN_WIDTH - 60, 380)
         
-        # Shadow
+
         shadow_rect = panel_rect.copy()
         shadow_rect.x += 5
         shadow_rect.y += 5
         pygame.draw.rect(self.screen, (0, 0, 0, 100), shadow_rect, border_radius=15)
         
-        # Main panel with Tet styling
+
         panel_color = PANEL_COLOR if TET_MODE else (222, 184, 135)
         border_color = TET_GOLD if TET_MODE else PANEL_DARK
         pygame.draw.rect(self.screen, panel_color, panel_rect, border_radius=15)
         pygame.draw.rect(self.screen, border_color, panel_rect, 4, border_radius=15)
         
-        # Title
+
         title_text = "KẾT THÚC" if TET_MODE else "GAME OVER"
         title_color = TET_GOLD if TET_MODE else ACCENT_COLOR
         title_surf = self.title_font.render(title_text, True, title_color)
         title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, int(self.panel_y) + 35))
         self.screen.blit(title_surf, title_rect)
         
-        # Score section
+
         score_y = int(self.panel_y) + 75
         
-        # Score label and value
+
         score_label_text = "Điểm" if TET_MODE else "Score"
         score_label = self.label_font.render(score_label_text, True, TEXT_SHADOW if not TET_MODE else (200, 180, 150))
         self.screen.blit(score_label, (60, score_y))
         score_val = self.score_font.render(str(self.score), True, WHITE)
         self.screen.blit(score_val, (60, score_y + 22))
         
-        # Best label and value
+
         best_label_text = "Kỷ lục" if TET_MODE else "Best"
         best_label = self.label_font.render(best_label_text, True, TEXT_SHADOW if not TET_MODE else (200, 180, 150))
         self.screen.blit(best_label, (60, score_y + 60))
         best_val = self.score_font.render(str(self.high_score), True, WHITE)
         self.screen.blit(best_val, (60, score_y + 82))
         
-        # Coins/Lixi earned
+
         earnings_y = score_y + 120
         if self.coins_earned > 0:
             coin_label = self.label_font.render("Xu", True, TEXT_SHADOW if not TET_MODE else (200, 180, 150))
@@ -553,7 +552,7 @@ class GameOverScreen:
             lixi_val = self.score_font.render(f"+{self.lixi_earned}", True, TET_RED)
             self.screen.blit(lixi_val, (150, earnings_y + 22))
         
-        # Medal
+
         if self.medal_type:
             self.medal_display.y = int(self.panel_y) + 85
             self.medal_display.x = SCREEN_WIDTH - 110
@@ -564,7 +563,7 @@ class GameOverScreen:
             medal_rect = medal_label.get_rect(center=(SCREEN_WIDTH - 78, int(self.panel_y) + 160))
             self.screen.blit(medal_label, medal_rect)
         
-        # New high score indicator
+
         if self.is_new_high_score:
             if TET_MODE:
                 new_text = "🎊 KỶ LỤC MỚI! 🎊"
@@ -574,7 +573,7 @@ class GameOverScreen:
             new_rect = new_surf.get_rect(center=(SCREEN_WIDTH // 2, int(self.panel_y) + 260))
             self.screen.blit(new_surf, new_rect)
         
-        # Buttons
+
         self.retry_button.rect.y = int(self.panel_y) + 290
         self.menu_button.rect.y = int(self.panel_y) + 290
         
@@ -604,11 +603,11 @@ class PauseScreen:
         
         center_x = SCREEN_WIDTH // 2
         
-        # Fonts
+
         self.title_font = get_vn_font(56)
         self.label_font = get_vn_font(24)
         
-        # Buttons
+
         self.resume_button = Button(
             center_x - BUTTON_WIDTH // 2,
             230,
@@ -636,7 +635,7 @@ class PauseScreen:
             ACCENT_COLOR if not TET_MODE else TET_RED
         )
         
-        # Animation
+
         self.pulse = 0
         
     def update(self, mouse_pos):
@@ -646,41 +645,41 @@ class PauseScreen:
         self.pulse = (self.pulse + 0.1) % (3.14159 * 2)
         
     def draw(self):
-        # Dark overlay with gradient
+
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 220 if TET_MODE else 200))
         self.screen.blit(overlay, (0, 0))
         
-        # Panel background with Tet styling
+
         panel_rect = pygame.Rect(40, 130, SCREEN_WIDTH - 80, 320)
         panel_color = PANEL_COLOR if TET_MODE else (35, 40, 50)
         border_color = TET_GOLD if TET_MODE else (60, 65, 80)
         pygame.draw.rect(self.screen, panel_color, panel_rect, border_radius=20)
         pygame.draw.rect(self.screen, border_color, panel_rect, 3, border_radius=20)
         
-        # Decorative lines
+
         pulse_alpha = int(100 + 50 * math.sin(self.pulse))
         line_color = TET_GOLD if TET_MODE else (100, 150, 255)
         pygame.draw.line(self.screen, line_color, 
                         (60, 175), (SCREEN_WIDTH - 60, 175), 2)
         
-        # Title
+
         title_text = "TẠM DỪNG" if TET_MODE else "PAUSED"
         title_surf = self.title_font.render(title_text, True, WHITE)
         title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 155))
         
-        # Title shadow
+
         shadow_color = PANEL_DARK if TET_MODE else (30, 30, 40)
         shadow = self.title_font.render(title_text, True, shadow_color)
         self.screen.blit(shadow, (title_rect.x + 2, title_rect.y + 2))
         self.screen.blit(title_surf, title_rect)
         
-        # Buttons
+
         self.resume_button.draw(self.screen)
         self.restart_button.draw(self.screen)
         self.menu_button.draw(self.screen)
         
-        # Keyboard hints
+
         if TET_MODE:
             hints = [
                 ("SPACE/P", "Tiếp tục"),
@@ -729,9 +728,6 @@ class PauseScreen:
         return None
 
 
-# =============================================================================
-# UI COMPONENTS
-# =============================================================================
 
 class Button:
     def __init__(self, x, y, width, height, text, color, text_color=WHITE):
@@ -746,23 +742,23 @@ class Button:
         self.hovered = self.rect.collidepoint(mouse_pos)
         
     def draw(self, screen):
-        # Draw shadow
+
         shadow_rect = self.rect.copy()
         shadow_rect.y += 4
         pygame.draw.rect(screen, (0, 0, 0, 100), shadow_rect, border_radius=BUTTON_RADIUS)
         
-        # Draw button with hover effect
+
         color = self.color
         if self.hovered:
             color = tuple(min(255, c + 30) for c in self.color[:3])
         
         pygame.draw.rect(screen, color, self.rect, border_radius=BUTTON_RADIUS)
         
-        # Border
+
         border_color = TET_GOLD if TET_MODE else (255, 255, 255, 100)
         pygame.draw.rect(screen, border_color, self.rect, 2, border_radius=BUTTON_RADIUS)
         
-        # Text
+
         text_surf = self.font.render(self.text, True, self.text_color)
         text_rect = text_surf.get_rect(center=self.rect.center)
         screen.blit(text_surf, text_rect)
@@ -779,13 +775,13 @@ class Panel:
         self.tet_style = tet_style
         
     def draw(self, screen):
-        # Shadow
+
         shadow_rect = self.rect.copy()
         shadow_rect.x += 5
         shadow_rect.y += 5
         pygame.draw.rect(screen, (0, 0, 0, 100), shadow_rect, border_radius=15)
         
-        # Main panel
+
         if self.tet_style:
             pygame.draw.rect(screen, PANEL_COLOR, self.rect, border_radius=15)
             pygame.draw.rect(screen, TET_GOLD, self.rect, 3, border_radius=15)
@@ -821,14 +817,14 @@ class MedalDisplay:
         color = colors.get(self.medal_type, (200, 200, 200))
         radius = int(32 * scale)
         
-        # Glow effect
+
         glow_color = (*color, 50)
         pygame.draw.circle(screen, color, (self.x + 32, self.y + 32), radius + 5)
         
-        # Medal
+
         pygame.draw.circle(screen, color, (self.x + 32, self.y + 32), radius)
         
-        # Inner details
+
         inner_color = tuple(max(0, c - 30) for c in color)
         pygame.draw.circle(screen, inner_color, (self.x + 32, self.y + 32), radius - 8, 2)
 

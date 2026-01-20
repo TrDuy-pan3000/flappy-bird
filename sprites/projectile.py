@@ -8,14 +8,14 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction=1, speed=8, color=(255, 255, 100), owner="player"):
         super().__init__()
         
-        self.direction = direction  # 1 = right, -1 = left
+        self.direction = direction
         self.speed = speed
         self.owner = owner
         
-        # Create bullet sprite
+
         self.image = pygame.Surface((12, 6), pygame.SRCALPHA)
         
-        # Bullet shape with glow
+
         pygame.draw.ellipse(self.image, color, (0, 0, 12, 6))
         pygame.draw.ellipse(self.image, (255, 255, 255), (2, 1, 4, 3))
         
@@ -24,7 +24,7 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.speed * self.direction
         
-        # Remove if off screen
+
         if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
             self.kill()
 
@@ -35,13 +35,13 @@ class Laser(pygame.sprite.Sprite):
     def __init__(self, y, direction=1, speed=0, width=SCREEN_WIDTH):
         super().__init__()
         
-        self.warning_time = 1000  # ms warning before fire
-        self.active_time = 500   # ms active
+        self.warning_time = 1000
+        self.active_time = 500
         self.start_time = pygame.time.get_ticks()
         self.is_active = False
         self.is_warning = True
         
-        # Create warning line
+
         self.image = pygame.Surface((width, 4), pygame.SRCALPHA)
         pygame.draw.rect(self.image, (255, 50, 50, 100), (0, 0, width, 4))
         
@@ -57,13 +57,13 @@ class Laser(pygame.sprite.Sprite):
         elapsed = now - self.start_time
         
         if elapsed < self.warning_time:
-            # Warning phase - flashing line
+
             alpha = 100 + int(math.sin(elapsed / 50) * 50)
             self.image.fill((0, 0, 0, 0))
             pygame.draw.rect(self.image, (255, 50, 50, alpha), (0, 0, self.width, 4))
             
         elif elapsed < self.warning_time + self.active_time:
-            # Active phase - solid beam
+
             if not self.is_active:
                 self.is_active = True
                 self.is_warning = False
@@ -95,7 +95,7 @@ class FallingObstacle(pygame.sprite.Sprite):
         if self.obstacle_type == "rock":
             size = 35
             self.image = pygame.Surface((size, size), pygame.SRCALPHA)
-            # Rocky shape
+
             pygame.draw.polygon(self.image, (120, 120, 130), [
                 (size//2, 0), (size, size//2), (size-5, size), 
                 (5, size), (0, size//2)
@@ -107,10 +107,10 @@ class FallingObstacle(pygame.sprite.Sprite):
             
         elif self.obstacle_type == "missile":
             self.image = pygame.Surface((40, 15), pygame.SRCALPHA)
-            # Missile body
+
             pygame.draw.rect(self.image, (200, 50, 50), (5, 3, 30, 9))
             pygame.draw.polygon(self.image, (220, 70, 70), [(35, 3), (40, 7), (35, 12)])
-            # Fins
+
             pygame.draw.polygon(self.image, (150, 40, 40), [(5, 0), (10, 3), (5, 7)])
             pygame.draw.polygon(self.image, (150, 40, 40), [(5, 15), (10, 12), (5, 8)])
             
@@ -119,7 +119,7 @@ class FallingObstacle(pygame.sprite.Sprite):
             self.image = pygame.Surface((size, size + 10), pygame.SRCALPHA)
             pygame.draw.circle(self.image, (40, 40, 45), (size//2, size//2 + 5), size//2)
             pygame.draw.circle(self.image, (60, 60, 65), (size//2, size//2 + 5), size//2, 2)
-            # Fuse
+
             pygame.draw.line(self.image, (100, 80, 50), (size//2, 5), (size//2, 0), 3)
             pygame.draw.circle(self.image, (255, 150, 50), (size//2, 0), 4)
             
@@ -143,12 +143,12 @@ class BombFragment(pygame.sprite.Sprite):
         
         self.vx = math.cos(math.radians(angle)) * speed
         self.vy = math.sin(math.radians(angle)) * speed
-        self.lifetime = 60  # frames
+        self.lifetime = 60
         
     def update(self):
         self.rect.x += int(self.vx)
         self.rect.y += int(self.vy)
-        self.vy += 0.2  # Gravity
+        self.vy += 0.2
         
         self.lifetime -= 1
         if self.lifetime <= 0 or self.rect.top > SCREEN_HEIGHT:
@@ -189,16 +189,16 @@ class ColorGate(pygame.sprite.Sprite):
         if self.is_highlighted:
             color = tuple(min(255, c + 50) for c in self.base_color)
         
-        # Gate frame
+
         pygame.draw.rect(self.image, color, (0, 0, width, self.gate_height), border_radius=10)
         pygame.draw.rect(self.image, (255, 255, 255), (0, 0, width, self.gate_height), 3, border_radius=10)
         
-        # Inner glow when highlighted
+
         if self.is_highlighted:
             inner_rect = pygame.Rect(5, 5, width - 10, self.gate_height - 10)
             pygame.draw.rect(self.image, (255, 255, 255, 100), inner_rect, border_radius=8)
             
-        # Feedback indicator
+
         if self.is_correct is True:
             pygame.draw.circle(self.image, (100, 255, 100), (width // 2, 20), 10)
         elif self.is_correct is False:

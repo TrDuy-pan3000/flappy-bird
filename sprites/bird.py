@@ -7,39 +7,39 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self, difficulty="medium", skin_id="default"):
         super().__init__()
         
-        # Load settings based on difficulty
+
         diff_settings = DIFFICULTIES.get(difficulty, DIFFICULTIES["medium"])
         self.gravity = diff_settings["gravity"]
         self.jump_power = diff_settings["jump"]
         self.base_gravity = self.gravity
         self.base_jump = self.jump_power
         
-        # Skin
+
         self.skin_id = skin_id
-        self.create_sprite()  # Always use programmatic sprites for reliability
+        self.create_sprite()
         
-        # Position
+
         self.rect = self.image.get_rect()
         self.rect.center = (100, SCREEN_HEIGHT // 2)
         
-        # Physics
+
         self.velocity = 0
         self.angle = 0
         self.target_angle = 0
         
-        # Animation
+
         self.animation_frame = 0
         self.last_animation_time = pygame.time.get_ticks()
         self.animation_speed = BIRD_ANIMATION_SPEED
         
-        # State
+
         self.alive = True
         self.has_shield = False
         self.shield_timer = 0
         self.invincible = False
         self.invincible_timer = 0
         
-        # Visual effects
+
         self.glow_alpha = 0
         self.glow_direction = 5
     
@@ -47,7 +47,7 @@ class Bird(pygame.sprite.Sprite):
         """Create bird sprite programmatically based on skin"""
         self.base_image = pygame.Surface((BIRD_WIDTH, BIRD_HEIGHT), pygame.SRCALPHA)
         
-        # Get skin colors
+
         skin_colors = self.get_skin_colors()
         body_color = skin_colors["body"]
         body_dark = skin_colors["dark"]
@@ -57,22 +57,22 @@ class Bird(pygame.sprite.Sprite):
         
         center_x, center_y = BIRD_WIDTH // 2, BIRD_HEIGHT // 2
         
-        # Body (ellipse)
+
         pygame.draw.ellipse(self.base_image, body_color, (2, 3, BIRD_WIDTH - 8, BIRD_HEIGHT - 6))
         pygame.draw.ellipse(self.base_image, body_dark, (2, 3, BIRD_WIDTH - 8, BIRD_HEIGHT - 6), 2)
         
-        # Wing
+
         wing_rect = pygame.Rect(6, center_y - 1, 14, 12)
         pygame.draw.ellipse(self.base_image, wing_color, wing_rect)
         
-        # Eye white
+
         pygame.draw.circle(self.base_image, eye_color, (center_x + 6, center_y - 4), 7)
-        # Eye pupil
+
         pygame.draw.circle(self.base_image, BLACK, (center_x + 8, center_y - 4), 4)
-        # Eye shine
+
         pygame.draw.circle(self.base_image, WHITE, (center_x + 6, center_y - 6), 2)
         
-        # Beak
+
         beak_points = [
             (BIRD_WIDTH - 8, center_y),
             (BIRD_WIDTH, center_y + 3),
@@ -80,7 +80,7 @@ class Bird(pygame.sprite.Sprite):
         ]
         pygame.draw.polygon(self.base_image, beak_color, beak_points)
         
-        # Special effects based on skin
+
         self.add_skin_effects()
         
         self.image = self.base_image.copy()
@@ -107,17 +107,17 @@ class Bird(pygame.sprite.Sprite):
         center_x, center_y = BIRD_WIDTH // 2, BIRD_HEIGHT // 2
         
         if self.skin_id == "golden":
-            # Crown
+
             crown_points = [(center_x - 8, 2), (center_x - 4, 8), (center_x, 2), 
                           (center_x + 4, 8), (center_x + 8, 2)]
             pygame.draw.polygon(self.base_image, (255, 215, 0), crown_points)
             
         elif self.skin_id == "ninja":
-            # Headband
+
             pygame.draw.line(self.base_image, (200, 50, 50), (5, center_y - 6), (BIRD_WIDTH - 10, center_y - 6), 3)
             
         elif self.skin_id == "robot":
-            # Antenna
+
             pygame.draw.line(self.base_image, (100, 100, 100), (center_x, 2), (center_x, 10), 2)
             pygame.draw.circle(self.base_image, (100, 200, 255), (center_x, 2), 3)
             
@@ -133,27 +133,27 @@ class Bird(pygame.sprite.Sprite):
         if self.invincible and now > self.invincible_timer:
             self.invincible = False
         
-        # Apply gravity
+
         self.velocity += self.gravity
         self.rect.y += int(self.velocity)
         
-        # Calculate rotation
+
         self.target_angle = -self.velocity * 3
         self.target_angle = max(-90, min(25, self.target_angle))
         
-        # Smooth angle transition
+
         angle_diff = self.target_angle - self.angle
         self.angle += angle_diff * 0.2
         
-        # Rotate image
+
         self.image = pygame.transform.rotate(self.base_image, self.angle)
         
-        # Keep rect centered
+
         old_center = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = old_center
         
-        # Animate glow
+
         if self.has_shield or self.invincible:
             self.glow_alpha += self.glow_direction
             if self.glow_alpha >= 100 or self.glow_alpha <= 20:

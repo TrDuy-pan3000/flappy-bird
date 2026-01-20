@@ -13,28 +13,28 @@ class EnemyBird(pygame.sprite.Sprite):
         self.difficulty = difficulty
         self.create_sprite()
         
-        # Position
+
         self.rect = self.image.get_rect()
         self.rect.x = x if x else SCREEN_WIDTH - 100
         self.rect.centery = y if y else SCREEN_HEIGHT // 2
         
-        # Stats
+
         self.hp = 3
         self.max_hp = 3
         self.alive = True
         
-        # Physics
+
         self.velocity = 0
         self.gravity = 0.25
         self.jump_power = -5
         
-        # AI behavior
+
         self.ai_settings = self.get_ai_settings()
         self.last_shot = 0
         self.last_decision = 0
         self.target_y = self.rect.centery
         
-        # Animation
+
         self.angle = 0
         self.hit_flash = 0
         
@@ -67,7 +67,7 @@ class EnemyBird(pygame.sprite.Sprite):
         
         center_x, center_y = BIRD_WIDTH // 2, BIRD_HEIGHT // 2
         
-        # Body (red)
+
         pygame.draw.ellipse(self.base_image, (220, 60, 60), (2, 3, BIRD_WIDTH - 8, BIRD_HEIGHT - 6))
         pygame.draw.ellipse(self.base_image, (180, 40, 40), (2, 3, BIRD_WIDTH - 8, BIRD_HEIGHT - 6), 2)
         
@@ -79,7 +79,7 @@ class EnemyBird(pygame.sprite.Sprite):
         pygame.draw.circle(self.base_image, BLACK, (center_x - 8, center_y - 4), 4)
         pygame.draw.circle(self.base_image, WHITE, (center_x - 6, center_y - 6), 2)
         
-        # Beak (pointing left)
+
         pygame.draw.polygon(self.base_image, (255, 140, 50), [
             (8, center_y), (0, center_y + 3), (8, center_y + 6)
         ])
@@ -92,26 +92,26 @@ class EnemyBird(pygame.sprite.Sprite):
             
         now = pygame.time.get_ticks()
         
-        # Update hit flash
+
         if self.hit_flash > 0:
             self.hit_flash -= 1
             
-        # Apply gravity
+
         self.velocity += self.gravity
         self.rect.y += int(self.velocity)
         
-        # AI decision making
+
         if now - self.last_decision > self.ai_settings["reaction_time"]:
             self.last_decision = now
             self.make_decision(player_bird, bullets)
             
-        # Move towards target
+
         if self.rect.centery < self.target_y - 20:
-            pass  # Fall naturally
+            pass
         elif self.rect.centery > self.target_y + 20:
             self.jump()
             
-        # Keep in bounds
+
         if self.rect.top < 0:
             self.rect.top = 0
             self.velocity = 0
@@ -119,15 +119,15 @@ class EnemyBird(pygame.sprite.Sprite):
             self.rect.bottom = SCREEN_HEIGHT - GROUND_HEIGHT
             self.velocity = 0
             
-        # Update sprite rotation
+
         self.target_angle = -self.velocity * 3
         self.target_angle = max(-90, min(25, self.target_angle))
         self.angle += (self.target_angle - self.angle) * 0.2
         
-        # Apply rotation and flash
+
         self.image = pygame.transform.rotate(self.base_image, self.angle)
         if self.hit_flash > 0 and self.hit_flash % 4 < 2:
-            # Flash white
+
             flash_surf = self.image.copy()
             flash_surf.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_ADD)
             self.image = flash_surf
@@ -141,21 +141,21 @@ class EnemyBird(pygame.sprite.Sprite):
         if not player_bird:
             return
             
-        # Dodge bullets
+
         if bullets and random.random() < self.ai_settings["dodge_chance"]:
             for bullet in bullets:
                 if bullet.owner == "player":
-                    # Check if bullet is heading towards us
+
                     if bullet.rect.right > self.rect.left - 100 and bullet.rect.left < self.rect.right:
                         if abs(bullet.rect.centery - self.rect.centery) < 50:
-                            # Dodge!
+
                             if bullet.rect.centery < self.rect.centery:
                                 self.target_y = self.rect.centery + 80
                             else:
                                 self.target_y = self.rect.centery - 80
                             return
         
-        # Track player with some randomness
+
         if random.random() < self.ai_settings["accuracy"]:
             self.target_y = player_bird.rect.centery + random.randint(-30, 30)
         else:
@@ -218,16 +218,16 @@ class Boss(pygame.sprite.Sprite):
         self.state_timer = 0
         self.attack_pattern = 0
         
-        # Movement
+
         self.base_x = SCREEN_WIDTH - 120
         self.target_y = SCREEN_HEIGHT // 2
         self.move_speed = 2
         
-        # Attack timers
+
         self.last_attack = 0
         self.attack_cooldown = 2000
         
-        # Visual
+
         self.hit_flash = 0
         self.weak_point_glow = 0
         
@@ -240,14 +240,14 @@ class Boss(pygame.sprite.Sprite):
         pygame.draw.ellipse(self.image, (30, 30, 40), (10, 20, 80, 60))
         pygame.draw.ellipse(self.image, (20, 20, 30), (10, 20, 80, 60), 3)
         
-        # Wing (left)
+
         wing_points = [(5, 50), (0, 30), (15, 45), (10, 60), (0, 70)]
         pygame.draw.polygon(self.image, (40, 40, 50), wing_points)
         
-        # Head
+
         pygame.draw.circle(self.image, (35, 35, 45), (75, 35), 22)
         
-        # Eye - weak point in phase 1
+
         eye_color = (255, 50, 50) if self.phase == 1 else (200, 50, 50)
         pygame.draw.circle(self.image, eye_color, (82, 32), 8)
         pygame.draw.circle(self.image, (255, 100, 100), (80, 30), 3)
@@ -257,12 +257,12 @@ class Boss(pygame.sprite.Sprite):
             (95, 38), (100, 42), (95, 46), (88, 42)
         ])
         
-        # Chest weak point - phase 2
+
         if self.phase >= 2:
             chest_color = (255, 150, 50) if self.phase == 2 else (150, 100, 50)
             pygame.draw.circle(self.image, chest_color, (50, 50), 12)
             
-        # Wing weak points - phase 3
+
         if self.phase == 3:
             pygame.draw.circle(self.image, (100, 255, 100), (8, 50), 8)
             
@@ -272,14 +272,14 @@ class Boss(pygame.sprite.Sprite):
             
         now = pygame.time.get_ticks()
         
-        # Update timers
+
         if self.hit_flash > 0:
             self.hit_flash -= 1
         self.weak_point_glow = (self.weak_point_glow + 5) % 360
         
-        # State machine
+
         if self.state == "entering":
-            # Move onto screen
+
             if self.rect.right > self.base_x + 60:
                 self.rect.x -= 3
             else:
@@ -287,29 +287,29 @@ class Boss(pygame.sprite.Sprite):
                 self.state_timer = now
                 
         elif self.state == "idle":
-            # Float up and down
+
             self.target_y = SCREEN_HEIGHT // 2 + math.sin(now / 500) * 50
             self.rect.centery += (self.target_y - self.rect.centery) * 0.05
             
-            # Decide to attack
+
             if now - self.state_timer > 2000:
                 self.state = "attacking"
                 self.attack_pattern = random.randint(0, 2)
                 self.state_timer = now
                 
         elif self.state == "attacking":
-            # Attack duration
+
             if now - self.state_timer > 1500:
                 self.state = "vulnerable"
                 self.state_timer = now
                 
         elif self.state == "vulnerable":
-            # Brief vulnerable window
+
             if now - self.state_timer > 1500:
                 self.state = "idle"
                 self.state_timer = now
                 
-        # Update phase based on HP
+
         if self.hp <= self.max_hp * 0.33:
             if self.phase < 3:
                 self.phase = 3
@@ -327,7 +327,7 @@ class Boss(pygame.sprite.Sprite):
             return attacks
             
         if self.phase == 1:
-            # Phase 1: 3 bullets straight
+
             if self.attack_pattern == 0:
                 for offset in [-20, 0, 20]:
                     attacks.append(Bullet(
@@ -336,7 +336,7 @@ class Boss(pygame.sprite.Sprite):
                     ))
                     
         elif self.phase == 2:
-            # Phase 2: Spread shot
+
             if self.attack_pattern == 0:
                 for angle in range(-30, 31, 15):
                     rad = math.radians(180 + angle)
@@ -346,7 +346,7 @@ class Boss(pygame.sprite.Sprite):
                     ))
                     
         elif self.phase == 3:
-            # Phase 3: More bullets + summon
+
             for angle in range(-40, 41, 20):
                 attacks.append(Bullet(
                     self.rect.left, self.rect.centery,
@@ -370,13 +370,13 @@ class Boss(pygame.sprite.Sprite):
     def get_weak_point_rect(self):
         """Get current weak point hitbox"""
         if self.phase == 1:
-            # Eye
+
             return pygame.Rect(self.rect.x + 74, self.rect.y + 24, 16, 16)
         elif self.phase == 2:
-            # Chest
+
             return pygame.Rect(self.rect.x + 38, self.rect.y + 38, 24, 24)
         else:
-            # Wing
+
             return pygame.Rect(self.rect.x, self.rect.y + 42, 16, 16)
             
     def draw_hp_bar(self, screen):
@@ -386,25 +386,25 @@ class Boss(pygame.sprite.Sprite):
         x = (SCREEN_WIDTH - bar_width) // 2
         y = 20
         
-        # Background
+
         pygame.draw.rect(screen, (50, 50, 50), (x - 2, y - 2, bar_width + 4, bar_height + 4), border_radius=5)
         
-        # HP fill
+
         hp_ratio = self.hp / self.max_hp
         fill_width = int(bar_width * hp_ratio)
         
-        # Color based on phase
+
         colors = {1: (255, 50, 50), 2: (255, 150, 50), 3: (100, 255, 100)}
         color = colors.get(self.phase, (255, 50, 50))
         
         pygame.draw.rect(screen, color, (x, y, fill_width, bar_height), border_radius=3)
         
-        # Phase markers
+
         for i in range(1, 3):
             marker_x = x + int(bar_width * (1 - i * 0.33))
             pygame.draw.line(screen, WHITE, (marker_x, y), (marker_x, y + bar_height), 2)
             
-        # Boss name
+
         font = pygame.font.Font(None, 24)
         name = font.render("THE GIANT RAVEN", True, WHITE)
         screen.blit(name, (SCREEN_WIDTH // 2 - name.get_width() // 2, y + bar_height + 5))
