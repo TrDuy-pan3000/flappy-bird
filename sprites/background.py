@@ -91,15 +91,13 @@ class Background:
             (175, 60, 35), (215, 70, 40), (260, 55, 35), (300, 80, 45), (350, 60, 35)
         ]
         
-
+        for x, h, w in houses:
             pygame.draw.rect(surf, city_color, (x, city_y - h + 50, w, h))
-
             pygame.draw.polygon(surf, (40, 25, 50), [
                 (x - 5, city_y - h + 50),
                 (x + w // 2, city_y - h + 30),
                 (x + w + 5, city_y - h + 50)
             ])
-
             for wy in range(city_y - h + 58, city_y + 40, 12):
                 for wx in range(x + 5, x + w - 5, 10):
                     if random.random() > 0.3:

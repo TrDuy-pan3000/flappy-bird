@@ -53,19 +53,18 @@ class Pipe(pygame.sprite.Sprite):
         cap_height = 28
         cap_extra = 4
         
-
+        if self.is_top:
             cap_y = height - cap_height
             pygame.draw.rect(self.image, body_color, (-cap_extra, cap_y, PIPE_WIDTH + cap_extra * 2, cap_height))
             pygame.draw.rect(self.image, highlight, (-cap_extra, cap_y, PIPE_WIDTH + cap_extra * 2, 4))
             pygame.draw.rect(self.image, dark_color, (-cap_extra, cap_y + cap_height - 4, PIPE_WIDTH + cap_extra * 2, 4))
             pygame.draw.rect(self.image, border_color, (-cap_extra, cap_y, PIPE_WIDTH + cap_extra * 2, cap_height), 2)
-
+        else:
             pygame.draw.rect(self.image, body_color, (-cap_extra, 0, PIPE_WIDTH + cap_extra * 2, cap_height))
             pygame.draw.rect(self.image, highlight, (-cap_extra, 0, PIPE_WIDTH + cap_extra * 2, 4))
             pygame.draw.rect(self.image, dark_color, (-cap_extra, cap_height - 4, PIPE_WIDTH + cap_extra * 2, 4))
             pygame.draw.rect(self.image, border_color, (-cap_extra, 0, PIPE_WIDTH + cap_extra * 2, cap_height), 2)
         
-
         pygame.draw.rect(self.image, border_color, (2, 0, PIPE_WIDTH - 4, height), 2)
             
     def update(self):
