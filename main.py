@@ -12,8 +12,7 @@ from sprites.collectibles import Coin, PowerUp
 from managers.score_manager import ScoreManager, GameDataManager
 from ui.menus import MainMenu, SettingsMenu, GameOverScreen, PauseScreen
 from ui.shop import ShopMenu
-from ui.minigames import MiniGameMenu, TimeAttackMode, ZenMode, DailyChallenge
-from ui.components import ScoreDisplay
+from ui.minigames import MiniGameMenu, TimeAttackMode, ZenMode, DailyChallenge, LiXiHuntMode
 
 # Import new mini-games
 from minigames.bird_battle import BirdBattle
@@ -62,6 +61,7 @@ class Game:
         self.init_minigames()
         
         # HUD
+        from ui.menus import ScoreDisplay
         self.score_display = ScoreDisplay(SCREEN_WIDTH // 2, 50)
         self.hud_font = pygame.font.Font(None, 28)
         
@@ -71,6 +71,7 @@ class Game:
         
         # Session
         self.coins_this_game = 0
+        self.lixi_this_game = 0  # Tet special
         self.combo_count = 0
         self.score_multiplier = 1.0
         
@@ -81,6 +82,8 @@ class Game:
         self.slow_timer = 0
         self.has_score_boost = False
         self.score_boost_timer = 0
+        self.has_lixi_magnet = False  # Tet special
+        self.lixi_magnet_timer = 0
         
         # Get ready
         self.get_ready = False
@@ -107,6 +110,10 @@ class Game:
         self.boss_rush = BossRush(self.screen, self.difficulty)
         self.treasure_hunt = TreasureHunt(self.screen, self.difficulty)
         
+        # Tet special mode
+        if TET_MODE:
+            self.lixi_hunt = LiXiHuntMode(self.screen, self.difficulty)
+        
     def new_game(self):
         """Start new game based on mode"""
         # Clear sprites
@@ -119,11 +126,13 @@ class Game:
         # Reset
         self.score_manager.reset_current_score()
         self.coins_this_game = 0
+        self.lixi_this_game = 0
         self.combo_count = 0
         self.score_multiplier = 1.0
         self.has_coin_magnet = False
         self.has_slow_motion = False
         self.has_score_boost = False
+        self.has_lixi_magnet = False
         
         skin = self.game_data.current_skin
         
@@ -147,6 +156,15 @@ class Game:
         elif self.game_mode == "treasure_hunt":
             self.treasure_hunt.start(skin)
             self.state = "minigame_treasure"
+            return
+        elif self.game_mode == "lixi_hunt" and TET_MODE:
+            self.lixi_hunt.start()
+            self.bird = Bird(self.difficulty, skin)
+            self.all_sprites.add(self.bird)
+            self.apply_skin_abilities(skin)
+            self.state = "minigame_lixi"
+            self.get_ready = True
+            self.get_ready_timer = 1000
             return
         
         # Classic modes
@@ -183,6 +201,14 @@ class Game:
         elif ability == "score_boost":
             self.has_score_boost = True
             self.score_boost_timer = pygame.time.get_ticks() + 15000
+        # Tet special abilities
+        elif ability == "lixi_magnet":
+            self.has_lixi_magnet = True
+            self.lixi_magnet_timer = pygame.time.get_ticks() + 20000
+        elif ability == "double_lixi":
+            self.score_multiplier = 2.0
+        elif ability == "fortune_boost":
+            self.score_multiplier = 1.88  # Lucky number
         
     def spawn_pipe(self):
         if self.game_mode == "zen":
@@ -281,6 +307,12 @@ class Game:
             self.has_score_boost = True
             self.score_boost_timer = now + dur
             self.score_multiplier = 2.0
+        # Tet special
+        elif ptype == "lixi_magnet":
+            self.has_lixi_magnet = True
+            self.lixi_magnet_timer = now + dur
+        elif ptype == "firework_burst":
+            self.particle_system.emit_firework(self.bird.rect.centerx, self.bird.rect.centery)
             
     def update_powerups(self):
         now = pygame.time.get_ticks()
@@ -291,6 +323,8 @@ class Game:
         if self.has_score_boost and now > self.score_boost_timer:
             self.has_score_boost = False
             self.score_multiplier = 1.0
+        if self.has_lixi_magnet and now > self.lixi_magnet_timer:
+            self.has_lixi_magnet = False
             
     def check_score(self):
         if not self.bird or self.game_mode == "zen":
@@ -319,7 +353,14 @@ class Game:
         if is_new:
             self.particle_system.emit_new_highscore(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         medal = self.score_manager.get_medal()
-        self.game_over_screen.set_scores(self.score_manager.current_score, self.score_manager.get_high_score(self.difficulty), is_new, medal, self.coins_this_game)
+        self.game_over_screen.set_scores(
+            self.score_manager.current_score, 
+            self.score_manager.get_high_score(self.difficulty), 
+            is_new, 
+            medal, 
+            self.coins_this_game,
+            self.lixi_this_game
+        )
         self.state = STATE_GAME_OVER
         
     def handle_events(self):
@@ -395,6 +436,11 @@ class Game:
             elif self.state == "minigame_battle":
                 action = self.bird_battle.handle_event(event)
                 if action == "done":
+                    # Grant coins based on performance
+                    if self.bird_battle.winner == "player":
+                        self.game_data.add_coins(100)
+                    else:
+                        self.game_data.add_coins(20)
                     self.state = STATE_MENU
                     self.main_menu.coins = self.game_data.coins
                     
@@ -430,6 +476,24 @@ class Game:
                     self.state = STATE_MENU
                     self.main_menu.coins = self.game_data.coins
                     
+            # Tet Special: Li Xi Hunt
+            elif self.state == "minigame_lixi":
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE and self.bird and self.bird.alive:
+                        self.bird.jump()
+                    elif event.key == pygame.K_ESCAPE:
+                        self.state = STATE_MENU
+                        self.main_menu.coins = self.game_data.coins
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.lixi_hunt.is_over:
+                        # End game - collect rewards
+                        results = self.lixi_hunt.get_results()
+                        self.game_data.add_coins(results['bonus_coins'])
+                        self.state = STATE_MENU
+                        self.main_menu.coins = self.game_data.coins
+                    elif self.bird and self.bird.alive:
+                        self.bird.jump()
+                    
     def update(self):
         mouse_pos = pygame.mouse.get_pos()
         
@@ -459,7 +523,7 @@ class Game:
             self.check_collisions()
             self.check_score()
             self.particle_system.update(self.dt)
-            self.score_display.set_score(self.score_manager.current_score)
+            self.score_display.score = self.score_manager.current_score
             if self.game_mode == "time_attack" and self.time_attack.update():
                 self.game_over()
             elif self.game_mode == "zen":
@@ -480,6 +544,23 @@ class Game:
             self.boss_rush.update(self.dt)
         elif self.state == "minigame_treasure":
             self.treasure_hunt.update(self.dt)
+        # Tet Special: Li Xi Hunt
+        elif self.state == "minigame_lixi":
+            if self.get_ready:
+                self.get_ready_timer -= self.dt
+                if self.get_ready_timer <= 0:
+                    self.get_ready = False
+                return
+            if self.bird and self.bird.alive:
+                self.bird.update()
+                # Bounds check
+                if self.bird.rect.bottom >= SCREEN_HEIGHT - GROUND_HEIGHT:
+                    self.bird.rect.bottom = SCREEN_HEIGHT - GROUND_HEIGHT
+                if self.bird.rect.top <= 0:
+                    self.bird.rect.top = 0
+            self.background.update()
+            self.ground.update()
+            self.lixi_hunt.update(self.dt, self.bird.rect if self.bird else pygame.Rect(0, 0, 0, 0))
             
     def draw(self):
         if self.state == STATE_MENU:
@@ -524,8 +605,55 @@ class Game:
             self.boss_rush.draw(self.background, self.ground)
         elif self.state == "minigame_treasure":
             self.treasure_hunt.draw(self.background, self.ground)
+        # Tet Special: Li Xi Hunt
+        elif self.state == "minigame_lixi":
+            self.background.draw(self.screen)
+            self.ground.draw(self.screen)
+            if self.bird:
+                self.bird.draw_effects(self.screen)
+                self.screen.blit(self.bird.image, self.bird.rect)
+            self.lixi_hunt.draw()
+            if self.get_ready:
+                self.draw_get_ready()
+            if self.lixi_hunt.is_over:
+                self.draw_lixi_results()
             
         pygame.display.flip()
+    
+    def draw_lixi_results(self):
+        """Draw Li Xi Hunt results screen"""
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        self.screen.blit(overlay, (0, 0))
+        
+        results = self.lixi_hunt.get_results()
+        
+        # Panel
+        panel_rect = pygame.Rect(40, 150, SCREEN_WIDTH - 80, 280)
+        pygame.draw.rect(self.screen, PANEL_COLOR, panel_rect, border_radius=20)
+        pygame.draw.rect(self.screen, TET_GOLD, panel_rect, 3, border_radius=20)
+        
+        # Title
+        title_font = pygame.font.Font(None, 48)
+        title = title_font.render("🧧 KẾT QUẢ 🧧", True, TET_GOLD)
+        self.screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, 170))
+        
+        # Stats
+        stats_font = pygame.font.Font(None, 32)
+        
+        lixi_text = stats_font.render(f"Lì Xì thu thập: {results['lixi_collected']}", True, WHITE)
+        self.screen.blit(lixi_text, (70, 230))
+        
+        value_text = stats_font.render(f"Tổng giá trị: {results['total_value']}", True, TET_GOLD)
+        self.screen.blit(value_text, (70, 270))
+        
+        bonus_text = stats_font.render(f"Xu bonus: +{results['bonus_coins']}", True, COIN_COLOR)
+        self.screen.blit(bonus_text, (70, 310))
+        
+        # Continue prompt
+        cont_font = pygame.font.Font(None, 24)
+        cont_text = cont_font.render("Nhấn chuột để tiếp tục", True, (180, 180, 180))
+        self.screen.blit(cont_text, (SCREEN_WIDTH // 2 - cont_text.get_width() // 2, 380))
         
     def draw_game_state(self):
         self.background.draw(self.screen)
@@ -547,17 +675,25 @@ class Game:
         elif self.game_mode == "zen":
             self.zen_mode.draw_hud()
         if self.combo_count >= COMBO_THRESHOLD:
-            combo = self.hud_font.render(f"COMBO x{self.combo_count}!", True, PRIMARY_COLOR)
+            combo_text = "COMBO" if not TET_MODE else "LIÊN HOÀN"
+            combo = self.hud_font.render(f"{combo_text} x{self.combo_count}!", True, PRIMARY_COLOR)
             self.screen.blit(combo, (SCREEN_WIDTH // 2 - combo.get_width() // 2, 85))
             
     def draw_get_ready(self):
         font = pygame.font.Font(None, 48)
-        shadow = font.render("Get Ready!", True, TEXT_SHADOW)
+        if TET_MODE:
+            text_str = "Sẵn Sàng!"
+            tap_str = "Nhấn SPACE hoặc chuột để bay!"
+        else:
+            text_str = "Get Ready!"
+            tap_str = "Tap or SPACE to fly!"
+        
+        shadow = font.render(text_str, True, TEXT_SHADOW)
         self.screen.blit(shadow, (SCREEN_WIDTH // 2 - shadow.get_width() // 2 + 2, SCREEN_HEIGHT // 2 + 2))
-        text = font.render("Get Ready!", True, WHITE)
+        text = font.render(text_str, True, WHITE)
         self.screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 2))
         small = pygame.font.Font(None, 26)
-        tap = small.render("Tap or SPACE to fly!", True, (200, 200, 200))
+        tap = small.render(tap_str, True, (200, 200, 200))
         self.screen.blit(tap, (SCREEN_WIDTH // 2 - tap.get_width() // 2, SCREEN_HEIGHT // 2 + 45))
         
     async def run(self):

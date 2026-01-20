@@ -1,9 +1,10 @@
 import pygame
 import math
+import random
 from settings import *
 
 class MiniGameMenu:
-    """Enhanced game mode selection menu with hover, scroll, and confirmation"""
+    """Enhanced game mode selection menu with Tet theme"""
     
     def __init__(self, screen):
         self.screen = screen
@@ -33,69 +34,94 @@ class MiniGameMenu:
         self.modes = [
             {
                 "id": "classic",
-                "name": "Classic Mode",
-                "desc": "The original Flappy Bird experience",
-                "details": "Fly through pipes endlessly. Simple and addictive!",
+                "name": "Chế độ Cổ điển" if TET_MODE else "Classic Mode",
+                "desc": "Trải nghiệm Flappy Bird gốc" if TET_MODE else "The original Flappy Bird experience",
+                "details": "Bay qua ống không ngừng. Đơn giản và gây nghiện!" if TET_MODE else "Fly through pipes endlessly. Simple and addictive!",
                 "icon_color": SECONDARY_COLOR,
-                "difficulty": "Easy",
+                "difficulty": "Dễ" if TET_MODE else "Easy",
+                "unlocked": True,
             },
             {
                 "id": "time_attack",
-                "name": "Time Attack",
-                "desc": "Score as much as possible in 60 seconds!",
-                "details": "Race against time. Every second counts!",
+                "name": "Tốc độ Thời gian" if TET_MODE else "Time Attack",
+                "desc": "Ghi điểm tối đa trong 60 giây!" if TET_MODE else "Score as much as possible in 60 seconds!",
+                "details": "Đua với thời gian. Mỗi giây đều quan trọng!" if TET_MODE else "Race against time. Every second counts!",
                 "icon_color": PRIMARY_COLOR,
-                "difficulty": "Medium",
+                "difficulty": "Vừa" if TET_MODE else "Medium",
+                "unlocked": True,
             },
             {
                 "id": "zen",
-                "name": "Zen Mode", 
-                "desc": "Relaxing flight - no obstacles",
-                "details": "Just collect coins and enjoy the flight.",
+                "name": "Chế độ Thư giãn" if TET_MODE else "Zen Mode", 
+                "desc": "Bay thư thái - không chướng ngại" if TET_MODE else "Relaxing flight - no obstacles",
+                "details": "Thu thập xu và tận hưởng chuyến bay." if TET_MODE else "Just collect coins and enjoy the flight.",
                 "icon_color": (150, 200, 255),
-                "difficulty": "Easy",
+                "difficulty": "Dễ" if TET_MODE else "Easy",
+                "unlocked": True,
             },
+        ]
+        
+        # Add Tet exclusive mode
+        if TET_MODE:
+            self.modes.insert(0, {
+                "id": "lixi_hunt",
+                "name": "🧧 Săn Lì Xì",
+                "desc": "Thu thập lì xì may mắn!",
+                "details": "Chế độ đặc biệt Tết! Thu thập bao lì xì để nhận xu bonus!",
+                "icon_color": TET_RED,
+                "difficulty": "Vừa",
+                "unlocked": True,
+                "tet_exclusive": True,
+            })
+        
+        # Add more modes
+        self.modes.extend([
             {
                 "id": "bird_battle",
-                "name": "Bird Battle",
-                "desc": "Epic PvP combat against AI!",
-                "details": "Shoot, dodge, use power-ups. Last bird standing wins!",
+                "name": "Đại Chiến Chim" if TET_MODE else "Bird Battle",
+                "desc": "Chiến đấu PvP với AI!" if TET_MODE else "Epic PvP combat against AI!",
+                "details": "Bắn, né, dùng kỹ năng. Chim cuối cùng thắng!" if TET_MODE else "Shoot, dodge, use power-ups. Last bird standing wins!",
                 "icon_color": ACCENT_COLOR,
-                "difficulty": "Hard",
+                "difficulty": "Khó" if TET_MODE else "Hard",
+                "unlocked": True,
             },
             {
                 "id": "dodge_master",
-                "name": "Dodge Master",
-                "desc": "Survive waves of falling obstacles!",
-                "details": "Test your reflexes. How long can you survive?",
+                "name": "Né Siêu Hạng" if TET_MODE else "Dodge Master",
+                "desc": "Sống sót qua làn sóng chướng ngại!" if TET_MODE else "Survive waves of falling obstacles!",
+                "details": "Thử thách phản xạ. Bạn sống được bao lâu?" if TET_MODE else "Test your reflexes. How long can you survive?",
                 "icon_color": (255, 150, 50),
-                "difficulty": "Hard",
+                "difficulty": "Khó" if TET_MODE else "Hard",
+                "unlocked": True,
             },
             {
                 "id": "memory_flight",
-                "name": "Memory Flight",
-                "desc": "Remember the color sequence!",
-                "details": "Simon Says with wings. Train your memory!",
+                "name": "Bay Nhớ Màu" if TET_MODE else "Memory Flight",
+                "desc": "Ghi nhớ chuỗi màu sắc!" if TET_MODE else "Remember the color sequence!",
+                "details": "Simon Says với cánh. Luyện trí nhớ!" if TET_MODE else "Simon Says with wings. Train your memory!",
                 "icon_color": (200, 100, 255),
-                "difficulty": "Medium",
+                "difficulty": "Vừa" if TET_MODE else "Medium",
+                "unlocked": True,
             },
             {
                 "id": "boss_rush",
-                "name": "Boss Rush",
-                "desc": "Face the Giant Raven!",
-                "details": "Epic boss fight with 3 phases. Aim for S rank!",
+                "name": "Đánh Boss Khổng Lồ" if TET_MODE else "Boss Rush",
+                "desc": "Đối đầu Quạ Khổng Lồ!" if TET_MODE else "Face the Giant Raven!",
+                "details": "Boss fight 3 giai đoạn. Nhắm hạng S!" if TET_MODE else "Epic boss fight with 3 phases. Aim for S rank!",
                 "icon_color": (80, 80, 100),
-                "difficulty": "Very Hard",
+                "difficulty": "Rất Khó" if TET_MODE else "Very Hard",
+                "unlocked": True,
             },
             {
                 "id": "treasure_hunt",
-                "name": "Treasure Hunt",
-                "desc": "Explore the maze for treasure!",
-                "details": "Find 5 treasures, avoid traps. 90 seconds!",
+                "name": "Săn Kho Báu" if TET_MODE else "Treasure Hunt",
+                "desc": "Khám phá mê cung tìm báu vật!" if TET_MODE else "Explore the maze for treasure!",
+                "details": "Tìm 5 kho báu, tránh bẫy. 90 giây!" if TET_MODE else "Find 5 treasures, avoid traps. 90 seconds!",
                 "icon_color": (218, 165, 32),
-                "difficulty": "Medium",
+                "difficulty": "Vừa" if TET_MODE else "Medium",
+                "unlocked": True,
             },
-        ]
+        ])
         
         # Initialize hover scales
         for mode in self.modes:
@@ -162,26 +188,42 @@ class MiniGameMenu:
             self.hover_scale[mode["id"]] = current + (target - current) * 0.15
         
     def draw(self, background, ground):
-        # Background
-        self.screen.fill((25, 28, 35))
+        # Background with Tet theme
+        if TET_MODE:
+            self.screen.fill((30, 15, 25))
+            # Decorative gradient
+            for y in range(60):
+                alpha = int(255 * (1 - y / 60))
+                pygame.draw.line(self.screen, (50, 25, 40), (0, y), (SCREEN_WIDTH, y))
+        else:
+            self.screen.fill((25, 28, 35))
+            for y in range(60):
+                alpha = int(255 * (1 - y / 60))
+                pygame.draw.line(self.screen, (40, 45, 55), (0, y), (SCREEN_WIDTH, y))
         
-        # Decorative gradient at top
-        for y in range(60):
-            alpha = int(255 * (1 - y / 60))
-            pygame.draw.line(self.screen, (40, 45, 55), (0, y), (SCREEN_WIDTH, y))
+        # Header with Tet styling
+        header_color = PANEL_COLOR if TET_MODE else (35, 40, 50)
+        pygame.draw.rect(self.screen, header_color, (0, 0, SCREEN_WIDTH, 55))
         
-        # Header
-        pygame.draw.rect(self.screen, (35, 40, 50), (0, 0, SCREEN_WIDTH, 55))
-        pygame.draw.line(self.screen, (60, 65, 80), (0, 55), (SCREEN_WIDTH, 55), 2)
+        line_color = TET_GOLD if TET_MODE else (60, 65, 80)
+        pygame.draw.line(self.screen, line_color, (0, 55), (SCREEN_WIDTH, 55), 2)
         
-        title = self.title_font.render("GAME MODES", True, WHITE)
-        self.screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, 12))
+        title = "CHẾ ĐỘ CHƠI" if TET_MODE else "GAME MODES"
+        title_surf = self.title_font.render(title, True, WHITE)
+        self.screen.blit(title_surf, (SCREEN_WIDTH // 2 - title_surf.get_width() // 2, 12))
         
         # Back button with hover
-        back_color = (80, 85, 100) if self.back_rect.collidepoint(pygame.mouse.get_pos()) else (60, 65, 80)
+        back_hover = self.back_rect.collidepoint(pygame.mouse.get_pos())
+        back_color = TET_RED if TET_MODE and back_hover else (PANEL_DARK if TET_MODE else (60, 65, 80))
+        if back_hover and not TET_MODE:
+            back_color = (80, 85, 100)
         pygame.draw.rect(self.screen, back_color, self.back_rect, border_radius=8)
-        pygame.draw.rect(self.screen, (100, 105, 120), self.back_rect, 2, border_radius=8)
-        back_text = self.small_font.render("← BACK", True, WHITE)
+        
+        border_color = TET_GOLD if TET_MODE else (100, 105, 120)
+        pygame.draw.rect(self.screen, border_color, self.back_rect, 2, border_radius=8)
+        
+        back_text_str = "← VỀ" if TET_MODE else "← BACK"
+        back_text = self.small_font.render(back_text_str, True, WHITE)
         self.screen.blit(back_text, (self.back_rect.centerx - back_text.get_width() // 2,
                                       self.back_rect.centery - back_text.get_height() // 2))
         
@@ -212,19 +254,30 @@ class MiniGameMenu:
         rect = pygame.Rect(mode["rect"].x, adjusted_y, mode["rect"].width, mode["rect"].height)
         is_hovered = mode["id"] == self.hovered_mode
         scale = self.hover_scale[mode["id"]]
+        is_tet_exclusive = mode.get("tet_exclusive", False)
         
         # Card background with hover effect
         if is_hovered:
             # Glow effect
             glow_rect = rect.inflate(4, 4)
             pygame.draw.rect(self.screen, (*mode["icon_color"][:3], 100), glow_rect, border_radius=14)
+        
+        # Main card with Tet styling
+        if TET_MODE:
+            bg_color = (60, 30, 40) if is_hovered else (45, 25, 35)
+        else:
+            bg_color = (55, 60, 75) if is_hovered else (45, 50, 62)
+        
+        # Special glow for Tet exclusive mode
+        if is_tet_exclusive:
+            bg_color = (80, 30, 30) if is_hovered else (60, 25, 25)
             
-        # Main card
-        bg_color = (55, 60, 75) if is_hovered else (45, 50, 62)
         pygame.draw.rect(self.screen, bg_color, rect, border_radius=12)
         
         # Border
         border_color = mode["icon_color"] if is_hovered else (70, 75, 90)
+        if is_tet_exclusive:
+            border_color = TET_GOLD
         pygame.draw.rect(self.screen, border_color, rect, 2 + int(scale), border_radius=12)
         
         # Icon circle with pulse effect
@@ -240,8 +293,10 @@ class MiniGameMenu:
         # Text content
         text_x = rect.x + 80
         
-        # Name
+        # Name with Tet exclusive badge
         name_color = WHITE if is_hovered else (220, 220, 225)
+        if is_tet_exclusive:
+            name_color = TET_GOLD
         name = self.label_font.render(mode["name"], True, name_color)
         self.screen.blit(name, (text_x, rect.y + 10))
         
@@ -250,12 +305,20 @@ class MiniGameMenu:
         self.screen.blit(desc, (text_x, rect.y + 35))
         
         # Difficulty badge
-        diff_colors = {
-            "Easy": (100, 200, 100),
-            "Medium": (255, 200, 100),
-            "Hard": (255, 120, 100),
-            "Very Hard": (255, 80, 80)
-        }
+        if TET_MODE:
+            diff_colors = {
+                "Dễ": (100, 200, 100),
+                "Vừa": (255, 200, 100),
+                "Khó": (255, 120, 100),
+                "Rất Khó": (255, 80, 80)
+            }
+        else:
+            diff_colors = {
+                "Easy": (100, 200, 100),
+                "Medium": (255, 200, 100),
+                "Hard": (255, 120, 100),
+                "Very Hard": (255, 80, 80)
+            }
         diff_color = diff_colors.get(mode["difficulty"], (150, 150, 150))
         diff_text = self.desc_font.render(mode["difficulty"], True, diff_color)
         diff_rect = pygame.Rect(rect.right - diff_text.get_width() - 20, rect.y + 12, 
@@ -263,16 +326,28 @@ class MiniGameMenu:
         pygame.draw.rect(self.screen, (*diff_color, 30), diff_rect, border_radius=4)
         self.screen.blit(diff_text, (diff_rect.x + 5, diff_rect.y + 3))
         
+        # Tet exclusive badge
+        if is_tet_exclusive:
+            tet_badge = self.desc_font.render("TẾT 2026", True, TET_GOLD)
+            self.screen.blit(tet_badge, (rect.right - tet_badge.get_width() - 15, rect.bottom - 18))
+        
         # Play hint when hovered
         if is_hovered:
-            play_text = self.desc_font.render("Click to play →", True, mode["icon_color"])
+            play_text_str = "Nhấn để chơi →" if TET_MODE else "Click to play →"
+            play_text = self.desc_font.render(play_text_str, True, mode["icon_color"])
             self.screen.blit(play_text, (rect.right - play_text.get_width() - 15, rect.bottom - 20))
         
     def draw_mode_icon(self, mode_id, center, is_hovered):
         x, y = center
         color = WHITE
         
-        if mode_id == "classic":
+        if mode_id == "lixi_hunt":
+            # Red envelope icon
+            pygame.draw.rect(self.screen, TET_RED, (x - 10, y - 12, 20, 24), border_radius=3)
+            pygame.draw.rect(self.screen, TET_GOLD, (x - 10, y - 12, 20, 24), 2, border_radius=3)
+            pygame.draw.circle(self.screen, TET_GOLD, (x, y), 6)
+            
+        elif mode_id == "classic":
             # Bird
             pygame.draw.ellipse(self.screen, (255, 220, 50), (x - 12, y - 7, 24, 14))
             pygame.draw.circle(self.screen, color, (x + 5, y - 2), 4)
@@ -303,7 +378,7 @@ class MiniGameMenu:
             ], 2)
             
         elif mode_id == "memory_flight":
-            # Brain/memory
+            # Brain/memory colors
             pygame.draw.circle(self.screen, (255, 100, 100), (x - 6, y - 3), 6)
             pygame.draw.circle(self.screen, (100, 150, 255), (x + 6, y - 3), 6)
             pygame.draw.circle(self.screen, (255, 255, 100), (x, y + 6), 6)
@@ -323,30 +398,37 @@ class MiniGameMenu:
             
     def draw_scrollbar(self):
         # Track
-        pygame.draw.rect(self.screen, (40, 45, 55), self.scrollbar_rect, border_radius=4)
+        track_color = PANEL_DARK if TET_MODE else (40, 45, 55)
+        pygame.draw.rect(self.screen, track_color, self.scrollbar_rect, border_radius=4)
         
         # Handle
         if self.scrollbar_handle:
-            handle_color = (100, 105, 120) if self.is_dragging else (80, 85, 100)
+            if TET_MODE:
+                handle_color = TET_GOLD if self.is_dragging else TET_RED
+            else:
+                handle_color = (100, 105, 120) if self.is_dragging else (80, 85, 100)
             pygame.draw.rect(self.screen, handle_color, self.scrollbar_handle, border_radius=4)
             
     def draw_confirmation(self):
         # Overlay
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
+        overlay.fill((0, 0, 0, 200 if TET_MODE else 180))
         self.screen.blit(overlay, (0, 0))
         
-        # Dialog box
+        # Dialog box with Tet styling
         dialog_width = 320
-        dialog_height = 200
+        dialog_height = 220
         dialog_rect = pygame.Rect(
             (SCREEN_WIDTH - dialog_width) // 2,
             (SCREEN_HEIGHT - dialog_height) // 2,
             dialog_width, dialog_height
         )
         
-        pygame.draw.rect(self.screen, (45, 50, 62), dialog_rect, border_radius=16)
-        pygame.draw.rect(self.screen, self.confirm_mode["icon_color"], dialog_rect, 3, border_radius=16)
+        dialog_bg = PANEL_COLOR if TET_MODE else (45, 50, 62)
+        pygame.draw.rect(self.screen, dialog_bg, dialog_rect, border_radius=16)
+        
+        border_color = TET_GOLD if TET_MODE else self.confirm_mode["icon_color"]
+        pygame.draw.rect(self.screen, border_color, dialog_rect, 3, border_radius=16)
         
         # Title
         title = self.label_font.render(self.confirm_mode["name"], True, WHITE)
@@ -357,23 +439,37 @@ class MiniGameMenu:
         self.screen.blit(details, (dialog_rect.centerx - details.get_width() // 2, dialog_rect.y + 55))
         
         # Difficulty
-        diff_text = self.small_font.render(f"Difficulty: {self.confirm_mode['difficulty']}", True, (150, 155, 170))
-        self.screen.blit(diff_text, (dialog_rect.centerx - diff_text.get_width() // 2, dialog_rect.y + 80))
+        diff_label = "Độ khó:" if TET_MODE else "Difficulty:"
+        diff_text = self.small_font.render(f"{diff_label} {self.confirm_mode['difficulty']}", True, (150, 155, 170))
+        self.screen.blit(diff_text, (dialog_rect.centerx - diff_text.get_width() // 2, dialog_rect.y + 85))
+        
+        # Tet exclusive note
+        if self.confirm_mode.get("tet_exclusive"):
+            tet_note = self.small_font.render("🧧 Chế độ đặc biệt Tết 2026! 🧧", True, TET_GOLD)
+            self.screen.blit(tet_note, (dialog_rect.centerx - tet_note.get_width() // 2, dialog_rect.y + 110))
         
         # Buttons
-        btn_y = dialog_rect.y + 120
+        btn_y = dialog_rect.y + 140
         
         # Play button
         self.play_btn = pygame.Rect(dialog_rect.x + 30, btn_y, 120, 45)
-        pygame.draw.rect(self.screen, self.confirm_mode["icon_color"], self.play_btn, border_radius=10)
-        play_text = self.label_font.render("PLAY", True, WHITE)
+        play_color = SECONDARY_COLOR if not TET_MODE else TET_RED
+        pygame.draw.rect(self.screen, play_color, self.play_btn, border_radius=10)
+        if TET_MODE:
+            pygame.draw.rect(self.screen, TET_GOLD, self.play_btn, 2, border_radius=10)
+        
+        play_text_str = "CHƠI" if TET_MODE else "PLAY"
+        play_text = self.label_font.render(play_text_str, True, WHITE)
         self.screen.blit(play_text, (self.play_btn.centerx - play_text.get_width() // 2,
                                       self.play_btn.centery - play_text.get_height() // 2))
         
         # Cancel button
         self.cancel_btn = pygame.Rect(dialog_rect.x + 170, btn_y, 120, 45)
-        pygame.draw.rect(self.screen, (80, 85, 100), self.cancel_btn, border_radius=10)
-        cancel_text = self.label_font.render("CANCEL", True, WHITE)
+        cancel_color = PANEL_DARK if TET_MODE else (80, 85, 100)
+        pygame.draw.rect(self.screen, cancel_color, self.cancel_btn, border_radius=10)
+        
+        cancel_text_str = "HỦY" if TET_MODE else "CANCEL"
+        cancel_text = self.label_font.render(cancel_text_str, True, WHITE)
         self.screen.blit(cancel_text, (self.cancel_btn.centerx - cancel_text.get_width() // 2,
                                         self.cancel_btn.centery - cancel_text.get_height() // 2))
         
@@ -441,8 +537,234 @@ class MiniGameMenu:
         return None
 
 
+class LiXiHuntMode:
+    """Tet Special Mode - Collect Lucky Red Envelopes!"""
+    
+    def __init__(self, screen, difficulty="medium"):
+        self.screen = screen
+        self.difficulty = difficulty
+        self.is_active = False
+        self.is_over = False
+        
+        # Fonts
+        self.font = pygame.font.Font(None, 36)
+        self.big_font = pygame.font.Font(None, 64)
+        self.small_font = pygame.font.Font(None, 24)
+        
+        # Game state
+        self.lixi_collected = 0
+        self.total_value = 0
+        self.time_limit = 60000  # 60 seconds
+        self.start_time = 0
+        self.remaining_time = self.time_limit
+        
+        # Li Xi envelopes
+        self.lixis = []
+        self.last_spawn = 0
+        self.spawn_interval = 800  # Spawn every 0.8s
+        
+        # Effects
+        self.particles = []
+        self.messages = []  # Floating messages like "+88 🧧"
+        
+    def start(self):
+        self.is_active = True
+        self.is_over = False
+        self.lixi_collected = 0
+        self.total_value = 0
+        self.start_time = pygame.time.get_ticks()
+        self.lixis.clear()
+        self.particles.clear()
+        self.messages.clear()
+        
+    def spawn_lixi(self):
+        """Spawn a new li xi envelope"""
+        x = random.randint(50, SCREEN_WIDTH - 50)
+        y = -40
+        value = random.choice(LIXI_VALUES)
+        
+        # Rare golden li xi
+        is_golden = random.random() < 0.1
+        if is_golden:
+            value *= 2
+        
+        self.lixis.append({
+            'x': x,
+            'y': y,
+            'value': value,
+            'vy': random.uniform(2, 4),
+            'swing': random.uniform(0, math.pi * 2),
+            'golden': is_golden,
+            'collected': False
+        })
+        
+    def update(self, dt, bird_rect):
+        if not self.is_active or self.is_over:
+            return
+            
+        now = pygame.time.get_ticks()
+        
+        # Update timer
+        self.remaining_time = max(0, self.time_limit - (now - self.start_time))
+        if self.remaining_time <= 0:
+            self.is_over = True
+            return
+        
+        # Spawn li xi
+        if now - self.last_spawn > self.spawn_interval:
+            self.spawn_lixi()
+            self.last_spawn = now
+        
+        # Update li xi positions
+        for lixi in self.lixis[:]:
+            lixi['y'] += lixi['vy']
+            lixi['swing'] += 0.1
+            lixi['x'] += math.sin(lixi['swing']) * 1.5
+            
+            # Check collection
+            lixi_rect = pygame.Rect(lixi['x'] - 20, lixi['y'] - 25, 40, 50)
+            if lixi_rect.colliderect(bird_rect) and not lixi['collected']:
+                lixi['collected'] = True
+                self.lixi_collected += 1
+                self.total_value += lixi['value']
+                
+                # Spawn celebration particles
+                self.spawn_collect_effect(lixi['x'], lixi['y'], lixi['value'], lixi['golden'])
+                
+            # Remove if off screen
+            if lixi['y'] > SCREEN_HEIGHT or lixi['collected']:
+                self.lixis.remove(lixi)
+        
+        # Update particles
+        self.particles = [p for p in self.particles if self.update_particle(p)]
+        
+        # Update floating messages
+        self.messages = [m for m in self.messages if self.update_message(m)]
+    
+    def update_particle(self, p):
+        p['x'] += p['vx']
+        p['y'] += p['vy']
+        p['vy'] += 0.1
+        p['life'] -= 0.03
+        return p['life'] > 0
+    
+    def update_message(self, m):
+        m['y'] -= 1.5
+        m['life'] -= 0.02
+        return m['life'] > 0
+        
+    def spawn_collect_effect(self, x, y, value, golden):
+        """Spawn collection celebration"""
+        # Particles
+        color = TET_GOLD if golden else TET_RED
+        for _ in range(15):
+            self.particles.append({
+                'x': x,
+                'y': y,
+                'vx': random.uniform(-4, 4),
+                'vy': random.uniform(-6, -2),
+                'life': 1.0,
+                'color': color,
+                'size': random.randint(4, 8)
+            })
+        
+        # Floating message
+        self.messages.append({
+            'x': x,
+            'y': y,
+            'text': f"+{value} 🧧",
+            'life': 1.0,
+            'color': TET_GOLD if golden else WHITE
+        })
+        
+    def draw_lixi(self, lixi):
+        """Draw a li xi envelope"""
+        x, y = int(lixi['x']), int(lixi['y'])
+        
+        # Envelope body
+        color = TET_GOLD if lixi['golden'] else TET_RED
+        pygame.draw.rect(self.screen, color, (x - 18, y - 25, 36, 50), border_radius=5)
+        
+        # Gold border and decoration
+        pygame.draw.rect(self.screen, TET_GOLD, (x - 18, y - 25, 36, 50), 2, border_radius=5)
+        
+        # Circle decoration
+        pygame.draw.circle(self.screen, TET_GOLD, (x, y), 10)
+        if lixi['golden']:
+            pygame.draw.circle(self.screen, WHITE, (x, y), 6)
+        
+        # Value text
+        value_text = self.small_font.render(str(lixi['value']), True, WHITE)
+        self.screen.blit(value_text, (x - value_text.get_width() // 2, y + 12))
+        
+    def draw(self):
+        """Draw li xi HUD and effects"""
+        # Draw all li xi envelopes
+        for lixi in self.lixis:
+            self.draw_lixi(lixi)
+        
+        # Draw particles
+        for p in self.particles:
+            alpha = int(255 * p['life'])
+            size = int(p['size'] * p['life'])
+            if size > 0:
+                pygame.draw.circle(self.screen, p['color'], (int(p['x']), int(p['y'])), size)
+        
+        # Draw floating messages
+        for m in self.messages:
+            alpha = int(255 * m['life'])
+            text = self.font.render(m['text'], True, m['color'])
+            self.screen.blit(text, (int(m['x']) - text.get_width() // 2, int(m['y'])))
+        
+        # Draw HUD
+        self.draw_hud()
+        
+    def draw_hud(self):
+        """Draw game HUD"""
+        # Timer background
+        timer_rect = pygame.Rect(SCREEN_WIDTH // 2 - 60, 10, 120, 40)
+        pygame.draw.rect(self.screen, (0, 0, 0, 180), timer_rect, border_radius=10)
+        pygame.draw.rect(self.screen, TET_GOLD, timer_rect, 2, border_radius=10)
+        
+        # Timer
+        seconds = self.remaining_time // 1000
+        ms = (self.remaining_time % 1000) // 10
+        timer_color = ACCENT_COLOR if seconds <= 10 else TET_GOLD
+        timer_text = self.font.render(f"{seconds:02d}:{ms:02d}", True, timer_color)
+        self.screen.blit(timer_text, (timer_rect.centerx - timer_text.get_width() // 2,
+                                       timer_rect.centery - timer_text.get_height() // 2))
+        
+        # Li Xi collected
+        lixi_rect = pygame.Rect(10, 10, 120, 35)
+        pygame.draw.rect(self.screen, (0, 0, 0, 180), lixi_rect, border_radius=8)
+        pygame.draw.rect(self.screen, TET_RED, lixi_rect, 2, border_radius=8)
+        
+        lixi_text = self.small_font.render(f"🧧 x{self.lixi_collected}", True, WHITE)
+        self.screen.blit(lixi_text, (20, 18))
+        
+        # Total value
+        value_rect = pygame.Rect(SCREEN_WIDTH - 130, 10, 120, 35)
+        pygame.draw.rect(self.screen, (0, 0, 0, 180), value_rect, border_radius=8)
+        pygame.draw.rect(self.screen, TET_GOLD, value_rect, 2, border_radius=8)
+        
+        value_text = self.small_font.render(f"💰 {self.total_value}", True, TET_GOLD)
+        self.screen.blit(value_text, (SCREEN_WIDTH - 120, 18))
+        
+        # Mode label
+        mode_text = self.small_font.render("🧧 SĂN LÌ XÌ", True, TET_RED)
+        self.screen.blit(mode_text, (SCREEN_WIDTH // 2 - mode_text.get_width() // 2, 55))
+        
+    def get_results(self):
+        """Return game results"""
+        return {
+            'lixi_collected': self.lixi_collected,
+            'total_value': self.total_value,
+            'bonus_coins': self.total_value // 2  # Convert to bonus coins
+        }
+
+
 class TimeAttackMode:
-    """Time Attack mini-game"""
+    """Time Attack mini-game with Tet styling"""
     
     def __init__(self, screen, difficulty="medium"):
         self.screen = screen
@@ -479,13 +801,17 @@ class TimeAttackMode:
         ms = (self.remaining_time % 1000) // 10
         rect = pygame.Rect(SCREEN_WIDTH // 2 - 50, 80, 100, 40)
         pygame.draw.rect(self.screen, (0, 0, 0, 180), rect, border_radius=10)
-        color = ACCENT_COLOR if s <= 10 else WHITE
+        
+        if TET_MODE:
+            pygame.draw.rect(self.screen, TET_GOLD, rect, 2, border_radius=10)
+        
+        color = ACCENT_COLOR if s <= 10 else (TET_GOLD if TET_MODE else WHITE)
         text = self.font.render(f"{s:02d}:{ms:02d}", True, color)
         self.screen.blit(text, (rect.centerx - text.get_width() // 2, rect.centery - text.get_height() // 2))
 
 
 class ZenMode:
-    """Zen Mode"""
+    """Zen Mode with Tet styling"""
     
     def __init__(self, screen, difficulty="easy"):
         self.screen = screen
@@ -507,28 +833,37 @@ class ZenMode:
         self.coins_collected += 1
         
     def draw_hud(self):
-        dist = self.font.render(f"Distance: {int(self.distance)}m", True, WHITE)
+        dist_text = f"Khoảng cách: {int(self.distance)}m" if TET_MODE else f"Distance: {int(self.distance)}m"
+        dist = self.font.render(dist_text, True, WHITE)
         self.screen.blit(dist, (20, 20))
-        coins = self.font.render(f"Coins: {self.coins_collected}", True, COIN_COLOR)
+        
+        coins = self.font.render(f"Xu: {self.coins_collected}" if TET_MODE else f"Coins: {self.coins_collected}", True, COIN_COLOR)
         self.screen.blit(coins, (SCREEN_WIDTH - 120, 20))
-        zen = self.font.render("ZEN MODE", True, (150, 200, 255))
+        
+        zen_text = "CHẾ ĐỘ THIỀN" if TET_MODE else "ZEN MODE"
+        zen = self.font.render(zen_text, True, (150, 200, 255))
         self.screen.blit(zen, (SCREEN_WIDTH // 2 - zen.get_width() // 2, 20))
 
 
 class DailyChallenge:
-    """Daily Challenge"""
+    """Daily Challenge with Tet styling"""
     
     def __init__(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(None, 24)
         import datetime
-        import random
         today = datetime.date.today()
         random.seed(today.toordinal())
         target = random.randint(10, 25)
-        self.active_challenge = {"type": "score", "target": target, "current": 0, "desc": f"Reach score {target}"}
+        
+        if TET_MODE:
+            self.active_challenge = {"type": "score", "target": target, "current": 0, 
+                                    "desc": f"Đạt điểm {target}"}
+        else:
+            self.active_challenge = {"type": "score", "target": target, "current": 0, 
+                                    "desc": f"Reach score {target}"}
         self.completed = False
-        self.reward = 50
+        self.reward = 88 if TET_MODE else 50  # Lucky number for Tet
         
     def update_progress(self, t, a):
         if self.active_challenge["type"] == t:
@@ -541,9 +876,16 @@ class DailyChallenge:
     def draw_objective(self):
         rect = pygame.Rect(20, SCREEN_HEIGHT - 55, SCREEN_WIDTH - 40, 40)
         pygame.draw.rect(self.screen, (0, 0, 0, 150), rect, border_radius=8)
+        
+        if TET_MODE:
+            pygame.draw.rect(self.screen, TET_GOLD, rect, 2, border_radius=8)
+        
         progress = min(1.0, self.active_challenge["current"] / self.active_challenge["target"])
         pw = int((rect.width - 10) * progress)
         pygame.draw.rect(self.screen, (80, 80, 80), (rect.x + 5, rect.y + 28, rect.width - 10, 6), border_radius=3)
-        pygame.draw.rect(self.screen, PRIMARY_COLOR, (rect.x + 5, rect.y + 28, pw, 6), border_radius=3)
+        
+        bar_color = TET_RED if TET_MODE else PRIMARY_COLOR
+        pygame.draw.rect(self.screen, bar_color, (rect.x + 5, rect.y + 28, pw, 6), border_radius=3)
+        
         desc = self.font.render(self.active_challenge["desc"], True, WHITE)
         self.screen.blit(desc, (rect.x + 10, rect.y + 6))
